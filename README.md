@@ -31,7 +31,7 @@ Carpetas que **no se versionan ni se publican** (documentación interna y docume
 
 Secciones, en orden:
 
-1. **Inicio:** propuesta de valor y botones para simular y contactar.
+1. **Inicio:** propuesta de valor, botones para simular y contactar, y el logo animado a la derecha (sobre fondo blanco).
 2. **El Fondo de Impacto:** cómo se financia, flujo en cuatro pasos y la cifra de referencia del 40%, con una aclaración de que no es garantía.
 3. **Frentes de impacto:** Bienestar, Prevención, Sostenibilidad y Crecimiento.
 4. **Módulo de Crecimiento:** el "Shark Tank de impacto".
@@ -68,7 +68,7 @@ El fondo se calcula sobre la **comisión neta recibida por la agencia después d
    - Actividad o destino del fondo (texto libre).
    - Desplegable con el enfoque de las charlas: estructura de cinco pasos, duración y materiales.
 
-Los campos de empresa, póliza y prima empiezan vacíos. Los porcentajes empiezan en 15% de comisión y 16% de retefuente.
+Los campos de empresa, póliza y prima empiezan vacíos. Los porcentajes empiezan en 15% de comisión y 11% de retefuente.
 
 ### Desglose en vivo
 
