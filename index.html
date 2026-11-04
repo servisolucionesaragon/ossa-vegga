@@ -136,6 +136,12 @@
     .contacto a { color: #fff; }
     .contacto .btn-primary { background: #fff; color: var(--azul-oscuro); border-color: #fff; }
 
+    .mapa {
+      display: inline-flex; width: 40px; height: 40px; border-radius: 50%; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.15); color: #fff; text-decoration: none; margin-top: 12px;
+    }
+    .mapa:hover { background: #fff; color: var(--azul-oscuro); }
+
     /* Equipo: fundador, foto y cofundadora */
     .equipo-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: stretch; margin-top: 36px; }
     .equipo-row .persona { display: flex; flex-direction: column; justify-content: center; }
@@ -354,8 +360,9 @@
     </div>
     <div class="grid" style="grid-template-columns:1fr 1fr">
       <div class="card">
-        <h3>Oficina</h3>
-        <p>Cra 84F #3C-40<br>Belén</p>
+        <h3>Dirección</h3>
+        <p>Carrera 84F # 3C-40<br>Barrio Belén<br>Medellín, Antioquia, Colombia</p>
+        <a class="mapa" href="https://maps.app.goo.gl/doFMH5soDMmMw2Xm8" target="_blank" rel="noopener noreferrer" aria-label="Ver ubicación en Google Maps" title="Ver en Google Maps"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a>
         <div class="redes landing-redes">
         <a href="https://wa.me/573105486395" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp de OSSA &amp; VEGA" title="WhatsApp"><img src="img/whatapp.png" alt="" width="24" height="24"></a>
         <a href="https://www.facebook.com/ossavegaseguros/" target="_blank" rel="noopener noreferrer" aria-label="Facebook de OSSA &amp; VEGA" title="Facebook"><img src="img/facebook.png" alt="" width="24" height="24"></a>
@@ -366,7 +373,7 @@
       <div class="card">
         <h3>Horario</h3>
         <p>Lunes a jueves: 9:00 a.m. – 5:00 p.m.<br>Viernes: 9:00 a.m. – 2:00 p.m.<br>Sábados, domingos y festivos: cerrado</p>
-        <p style="margin-top:14px"><a class="btn btn-primary" href="https://wa.me/573105486395" target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a></p>
+        
       </div>
     </div>
   </div>
