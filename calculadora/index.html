@@ -465,11 +465,6 @@
         <div class="desc">Monto disponible para financiar el Plan de Trabajo Anual de la empresa seleccionada.</div>
         <div class="eq"><span>Equivalente sobre prima:</span><b id="d-eq">0%</b></div>
       </div>
-
-      <div class="margen">
-        <span>Margen operación OSSA &amp; VEGA (<span id="d-margen-pct">60</span>% neto):</span>
-        <b id="d-margen">$ 0</b>
-      </div>
     </div>
   </aside>
 </main>
@@ -668,11 +663,10 @@
     $('d-neta').textContent = cop(r.comisionNeta);
     $('d-fondo').textContent = cop(r.fondoImpacto);
     $('d-eq').textContent = r.equivalentePrima.toFixed(2) + '%';
-    $('d-margen').textContent = cop(r.margenOperacion);
   }
 
   function pintarVacio() {
-    ['d-prima', 'd-comision', 'd-neta', 'd-fondo', 'd-margen'].forEach(function (id) { $(id).textContent = '$ 0'; });
+    ['d-prima', 'd-comision', 'd-neta', 'd-fondo'].forEach(function (id) { $(id).textContent = '$ 0'; });
     $('d-ret').textContent = '- $ 0';
     $('d-eq').textContent = '0%';
   }
