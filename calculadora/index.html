@@ -274,13 +274,19 @@
     #reporte .rep-note { margin-top: 18px; font-size: 11px; color: #6b7785; line-height: 1.5; border-top: 1px solid #e3e8ee; padding-top: 10px; }
 
     @media print {
-      body * { visibility: hidden; }
-      #rep-overlay, #rep-overlay * { visibility: visible; }
-      #rep-overlay { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; background: none; padding: 0; }
-      #rep-overlay .modal { box-shadow: none; border: none; max-height: none; width: 100%; }
-      #rep-overlay .rep-scroll { overflow: visible; background: #fff; padding: 0; }
-      #rep-overlay .no-print { display: none !important; }
-      #reporte { padding: 0; }
+      @page { margin: 12mm; }
+      html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+      body > *:not(#rep-overlay) { display: none !important; }
+      #rep-overlay {
+        display: block !important; position: static !important; inset: auto !important;
+        width: auto !important; height: auto !important; background: none !important; padding: 0 !important;
+        z-index: auto !important;
+      }
+      #rep-overlay .modal { box-shadow: none !important; border: none !important; max-height: none !important; width: 100% !important; overflow: visible !important; }
+      #rep-overlay .modal-head, #rep-overlay .modal-foot, #rep-overlay .no-print { display: none !important; }
+      #rep-overlay .rep-scroll { overflow: visible !important; background: #fff !important; padding: 0 !important; }
+      #reporte { padding: 0 !important; border-radius: 0 !important; }
+      #reporte .rep-head, #reporte table, #reporte .rep-note { break-inside: avoid; }
     }
   </style>
 </head>
