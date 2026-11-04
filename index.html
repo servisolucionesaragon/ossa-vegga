@@ -42,7 +42,26 @@
     .marca small { color: var(--muted); font-size: 12px; }
     nav a { margin-left: 18px; text-decoration: none; color: var(--texto); font-size: 14px; }
     nav a:hover { color: var(--azul); }
-    @media (max-width: 760px) { nav a { display: none; } }
+    .menu-btn {
+      display: none; width: 44px; height: 44px; border: 1px solid var(--borde); border-radius: 10px;
+      background: #fff; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 0;
+    }
+    .menu-btn span { display: block; width: 22px; height: 2px; background: var(--azul-oscuro); border-radius: 2px; transition: transform .2s, opacity .2s; }
+    .menu-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    @media (max-width: 760px) {
+      .menu-btn { display: flex; }
+      header.top { position: sticky; }
+      nav {
+        display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff;
+        flex-direction: column; padding: 8px 24px 16px; border-bottom: 1px solid var(--borde);
+        box-shadow: 0 10px 24px rgba(11, 111, 196, 0.12);
+      }
+      nav.open { display: flex; }
+      nav a { margin: 0; padding: 14px 0; border-bottom: 1px solid var(--borde); font-size: 16px; }
+      nav a:last-child { border-bottom: none; }
+    }
 
     .btn {
       display: inline-block; padding: 12px 20px; border-radius: 10px; font-weight: 600;
@@ -139,13 +158,14 @@
       <img src="img/images.jpeg" alt="Logo OSSA &amp; VEGA">
       <span><strong>OSSA &amp; VEGA</strong><small>Agencia de Seguros</small></span>
     </a>
-    <nav>
+    <nav id="menu-principal">
       <a href="calculadora/">Calculadora</a>
       <a href="#fondo">Fondo de Impacto</a>
       <a href="#frentes">Frentes</a>
       <a href="#crecimiento">Crecimiento</a>
       <a href="#contacto">Contacto</a>
     </nav>
+    <button class="menu-btn" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-principal"><span></span><span></span><span></span></button>
   </div>
 </header>
 
@@ -323,5 +343,19 @@
   </div>
 </footer>
 
+<script>
+  (function () {
+    var btn = document.querySelector('.menu-btn');
+    var nav = document.getElementById('menu-principal');
+    function set(abierto) {
+      nav.classList.toggle('open', abierto);
+      btn.setAttribute('aria-expanded', String(abierto));
+      btn.setAttribute('aria-label', abierto ? 'Cerrar menú' : 'Abrir menú');
+    }
+    btn.addEventListener('click', function () { set(!nav.classList.contains('open')); });
+    nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { set(false); }); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+  })();
+</script>
 </body>
 </html>
