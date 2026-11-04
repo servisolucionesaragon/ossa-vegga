@@ -13,8 +13,8 @@
       --text: #1d2733;
       --muted: #6b7785;
       --border: #e3e8ee;
-      --brand: #0f9b8e;
-      --brand-soft: #e6f6f4;
+      --brand: #0b6fc4;
+      --brand-soft: #e4f0fb;
       --danger: #e5484d;
       --danger-soft: #fdeceD;
       --panel: #2b4a6f;
@@ -31,8 +31,8 @@
       --text: #e6edf5;
       --muted: #8a9bb3;
       --border: #1f2d44;
-      --brand: #17c3b2;
-      --brand-soft: #123a3a;
+      --brand: #3d9be9;
+      --brand-soft: #1b3350;
       --danger: #ff6369;
       --danger-soft: #3a1c22;
       --panel: #070d18;
@@ -40,7 +40,7 @@
       --panel-text: #e6edf5;
       --panel-muted: #8a9bb3;
       --input: #0f1a2b;
-      --chip-fg: #04201e;
+      --chip-fg: #06223d;
     }
     * { box-sizing: border-box; }
     body {
@@ -141,7 +141,7 @@
     }
     .desglose-head .live { font-size: 12px; color: var(--brand); }
     .rule {
-      border: 1px solid #4f8c86; background: #1f4b49; color: #c8fff7;
+      border: 1px solid #4f8ccc; background: #1f4a78; color: #d4ebff;
       border-radius: 12px; padding: 12px; font-size: 12px; line-height: 1.5; margin-bottom: 14px;
     }
     .row {
@@ -154,26 +154,26 @@
     .row .val { font-family: Consolas, monospace; font-size: 15px; font-weight: 600; white-space: nowrap; }
     .row.neg { border-color: #4a1f27; background: #241419; }
     .row.neg .lbl, .row.neg .val { color: #ff6b76; }
-    .row.net { border-color: #1e4d48; }
-    .row.net .lbl, .row.net .val { color: #3ce0cf; }
+    .row.net { border-color: #1d4a7a; }
+    .row.net .lbl, .row.net .val { color: #7cc4ff; }
     .fondo {
-      border: 2px solid #3ce0cf; background: linear-gradient(180deg, #1f5552, #1a4745);
+      border: 2px solid #7cc4ff; background: linear-gradient(180deg, #1c4a7c, #183f6b);
       border-radius: 14px; padding: 16px; margin: 14px 0;
     }
     .fondo .top { display: flex; justify-content: space-between; align-items: center; }
-    .fondo .title { font-size: 12px; font-weight: 700; color: #3ce0cf; letter-spacing: 0.4px; }
+    .fondo .title { font-size: 12px; font-weight: 700; color: #7cc4ff; letter-spacing: 0.4px; }
     .fondo .pill {
-      font-size: 11px; font-weight: 700; background: #17c3b2; color: #04201e;
+      font-size: 11px; font-weight: 700; background: #3d9be9; color: #06223d;
       padding: 3px 8px; border-radius: 999px;
     }
     .fondo .amount {
       font-family: Consolas, monospace; font-size: 34px; font-weight: 700;
-      color: #3ce0cf; margin: 10px 0 6px;
+      color: #7cc4ff; margin: 10px 0 6px;
     }
-    .fondo .desc { font-size: 12px; color: #9fbfbb; line-height: 1.5; }
+    .fondo .desc { font-size: 12px; color: #a9c8e6; line-height: 1.5; }
     .fondo .eq {
       display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px;
-      border-top: 1px solid #1e4d48; font-size: 12px; color: #9fbfbb;
+      border-top: 1px solid #1d4a7a; font-size: 12px; color: #a9c8e6;
     }
     .margen {
       display: flex; justify-content: space-between; font-size: 12px; color: var(--panel-muted);
@@ -205,7 +205,7 @@
     .sim-result {
       background: var(--panel); color: var(--panel-text); border-radius: 12px; padding: 16px; margin-top: 16px;
     }
-    .sim-result .big { font-family: Consolas, monospace; font-size: 28px; font-weight: 700; color: #3ce0cf; margin: 6px 0 12px; }
+    .sim-result .big { font-family: Consolas, monospace; font-size: 28px; font-weight: 700; color: #7cc4ff; margin: 6px 0 12px; }
     .sim-result .r { display: flex; justify-content: space-between; font-size: 12px; font-family: Consolas, monospace; padding: 4px 0; color: var(--panel-muted); }
     .sim-result .r b { color: var(--panel-text); font-weight: 600; }
     .sim-result .r.neg b { color: #ff6b76; }
@@ -243,16 +243,16 @@
       background: #fff; color: #1d2733; padding: 32px 36px; border-radius: 8px;
       font-family: "Segoe UI", system-ui, sans-serif; font-size: 13px;
     }
-    #reporte .rep-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0f9b8e; padding-bottom: 12px; margin-bottom: 8px; }
-    #reporte .rep-brand { font-weight: 800; font-size: 18px; color: #0f9b8e; }
+    #reporte .rep-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0b6fc4; padding-bottom: 12px; margin-bottom: 8px; }
+    #reporte .rep-brand { font-weight: 800; font-size: 18px; color: #0b6fc4; }
     #reporte .rep-title { font-size: 15px; font-weight: 600; margin-top: 2px; }
     #reporte .rep-date { color: #6b7785; font-size: 12px; text-align: right; }
-    #reporte h4 { font-size: 13px; color: #0f9b8e; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+    #reporte h4 { font-size: 13px; color: #0b6fc4; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; }
     #reporte table { width: 100%; border-collapse: collapse; }
     #reporte th, #reporte td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #e3e8ee; vertical-align: top; }
     #reporte th { width: 45%; color: #4b5663; font-weight: 500; }
     #reporte td { font-family: Consolas, monospace; }
-    #reporte tr.total th, #reporte tr.total td { font-weight: 700; color: #0b6e64; background: #e6f6f4; }
+    #reporte tr.total th, #reporte tr.total td { font-weight: 700; color: #0a4f8a; background: #e4f0fb; }
     #reporte tr.neg td { color: #c0392b; }
     #reporte .rep-note { margin-top: 18px; font-size: 11px; color: #6b7785; line-height: 1.5; border-top: 1px solid #e3e8ee; padding-top: 10px; }
 
@@ -491,13 +491,13 @@
       </div>
 
       <div class="sim-result">
-        <div style="font-size:12px;font-weight:700;color:#3ce0cf;display:flex;justify-content:space-between">
+        <div style="font-size:12px;font-weight:700;color:#7cc4ff;display:flex;justify-content:space-between">
           <span>FONDO DE IMPACTO (40% NETO)</span><span style="color:var(--panel-muted);font-weight:400">Regla OSSA &amp; VEGA</span>
         </div>
         <div class="big" id="sim-fondo">$ 0</div>
         <div class="r"><span>Comisión bruta:</span><b id="sim-bruta">$ 0</b></div>
         <div class="r neg"><span id="sim-ret-txt">Retención (16%):</span><b id="sim-ret-val">- $ 0</b></div>
-        <div class="r"><span><b style="color:#3ce0cf">Comisión neta recibida:</b></span><b style="color:#3ce0cf" id="sim-neta">$ 0</b></div>
+        <div class="r"><span><b style="color:#7cc4ff">Comisión neta recibida:</b></span><b style="color:#7cc4ff" id="sim-neta">$ 0</b></div>
         <div class="r"><span>Margen agencia OSSA &amp; VEGA (60%):</span><span id="sim-margen">$ 0</span></div>
       </div>
     </div>
