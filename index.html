@@ -136,6 +136,18 @@
     .contacto a { color: #fff; }
     .contacto .btn-primary { background: #fff; color: var(--azul-oscuro); border-color: #fff; }
 
+    /* Equipo: fundador, foto y cofundadora */
+    .equipo-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: stretch; margin-top: 36px; }
+    .equipo-row .persona { display: flex; flex-direction: column; justify-content: center; }
+    .equipo-foto img {
+      width: 100%; height: 100%; min-height: 240px; object-fit: cover; border-radius: 14px; display: block;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    @media (max-width: 800px) {
+      .equipo-row { grid-template-columns: 1fr; }
+      .equipo-foto img { min-height: 220px; height: 220px; }
+    }
+
     footer.pie { background: #0f1f33; color: #b8c7d9; padding: 28px 0; font-size: 13px; }
     footer.pie .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
     footer.pie a { color: #fff; text-decoration: none; font-weight: 600; }
@@ -327,12 +339,20 @@
     <h2>Hablemos de tu empresa y de tus pólizas</h2>
     <p class="lead" style="color:#e1efff">Te ayudamos a simular tu Fondo de Impacto y a definir los frentes que te interesan.</p>
 
-    <div class="grid">
-      <div class="card">
-        <h3>Equipo</h3>
-        <p><strong>Fundador</strong><br>Mateo Ossa Vega<br>Tel. / WhatsApp: <a href="tel:+573105486395">310 548 6395</a><br>Correo: <a href="mailto:mateo@ossavega.com">mateo@ossavega.com</a></p>
-        <p><strong>Cofundadora</strong><br>Paula Andrea Arias<br>Tel. / WhatsApp: <a href="tel:+573016856861">301 685 6861</a><br>Correo: <a href="mailto:paula@ossavega.com">paula@ossavega.com</a></p>
+    <div class="equipo-row">
+      <div class="card persona">
+        <h3>Fundador</h3>
+        <p><strong>Mateo Ossa Vega</strong><br>Tel. / WhatsApp: <a href="tel:+573105486395">310 548 6395</a><br>Correo: <a href="mailto:mateo@ossavega.com">mateo@ossavega.com</a></p>
       </div>
+      <div class="equipo-foto">
+        <img src="img/personas.jpg" alt="Mateo Ossa Vega y Paula Andrea Arias, fundadores de OSSA &amp; VEGA">
+      </div>
+      <div class="card persona">
+        <h3>Cofundadora</h3>
+        <p><strong>Paula Andrea Arias</strong><br>Tel. / WhatsApp: <a href="tel:+573016856861">301 685 6861</a><br>Correo: <a href="mailto:paula@ossavega.com">paula@ossavega.com</a></p>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
       <div class="card">
         <h3>Oficina</h3>
         <p>Cra 84F #3C-40<br>Belén</p>
