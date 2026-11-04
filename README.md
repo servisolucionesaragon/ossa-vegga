@@ -1,8 +1,8 @@
 # OSSA & VEGA — Portal web
 
-Portal de **OSSA & VEGA Seguros**, agencia de seguros en Bello, Antioquia. El sitio tiene dos páginas:
+Portal de **OSSA & VEGA Seguros**, agencia de seguros con el lema *"Liderando con Sentido"*. El sitio tiene dos páginas:
 
-- **Landing principal** (`/`): presenta la agencia y el Fondo de Impacto a las empresas aliadas.
+- **Landing principal** (`/`): presenta la agencia, su filosofía, los frentes de impacto, el Fondo de Impacto y los datos de contacto.
 - **Calculadora del Fondo de Impacto** (`/calculadora/`): calcula y registra el rubro de impacto de cada póliza.
 
 ## Enlaces
@@ -16,7 +16,7 @@ Portal de **OSSA & VEGA Seguros**, agencia de seguros en Bello, Antioquia. El si
 index.html                       Landing principal
 calculadora/index.html           Calculadora Fondo de Impacto
 js/fondo-impacto.js              Lógica de cálculo (sin DOM)
-img/                             Logos e iconos de redes sociales
+img/                             Logos, fotografía del equipo e iconos de redes
 .assetsignore                    Archivos que no se publican (docs, documentos)
 .gitignore                       Archivos que no se versionan
 README.md                        Este archivo
@@ -31,17 +31,26 @@ Carpetas que **no se versionan ni se publican** (documentación interna y docume
 
 Secciones, en orden:
 
-1. **Inicio:** propuesta de valor, botones para simular y contactar, y el logo animado a la derecha (sobre fondo blanco).
-2. **El Fondo de Impacto:** cómo se financia, flujo en cuatro pasos y la cifra de referencia del 40%, con una aclaración de que no es garantía.
-3. **Frentes de impacto:** Bienestar, Prevención, Sostenibilidad y Crecimiento.
+1. **Inicio (hero):** "Agencia de Seguros", el lema *"Seguros con propósito. Bienestar que transforma."*, una presentación breve de la agencia, botones para simular y contactar, y el logo animado sobre fondo blanco.
+2. **El Fondo de Impacto:** título "Convertimos oportunidades comerciales en bienestar y desarrollo.", tres párrafos explicativos y el flujo de cuatro pasos.
+3. **Frentes de impacto:** Bienestar humano, Prevención y protección, Sostenibilidad y medio ambiente, y Crecimiento y desarrollo, con una nota de que cada empresa prioriza según su realidad.
 4. **Módulo de Crecimiento:** el "Shark Tank de impacto".
-5. **Por qué OSSA & VEGA:** inversión estructurada, proyectos medidos y atención personalizada.
-6. **Contacto:** asesora, oficina, horario, botón de WhatsApp, redes sociales y enlace a la calculadora.
-7. **Pie de página:** derechos y créditos de desarrollo.
+5. **Por qué OSSA & VEGA:** dos tarjetas, *Impacto estructurado* y *Compromiso con el futuro*.
+6. **Nuestra filosofía empresarial:** "Crecer juntos es crecer mejor." y cuatro compromisos: propósito que trasciende, relaciones que construyen valor, liderazgo con sentido y cultura de impacto.
+7. **Contacto:**
+   - Tarjeta de equipo en tres columnas: fundador, fotografía del equipo y cofundadora.
+   - Tarjetas de Dirección (con ícono de mapa), Horario y Redes sociales (iconos de WhatsApp, Facebook, Instagram, LinkedIn y Linktree).
+8. **Pie de página:** nombre de la agencia y créditos de desarrollo.
+
+### Menú y navegación
 
 Menú superior: Calculadora, Fondo de Impacto, Frentes, Crecimiento y Contacto. En pantallas de hasta 760 px el menú se muestra como **hamburguesa**; se cierra al elegir una opción o con la tecla Escape.
 
 El logo y el nombre de la agencia llevan al inicio.
+
+### Animaciones
+
+Los textos, tarjetas, pasos y la fotografía aparecen al hacer scroll, con un efecto de subida suave (fade up) o de aparición (fade in), con retardos escalonados entre tarjetas. Si el usuario tiene activado "reducir movimiento" en su sistema, las animaciones no se aplican.
 
 ## Calculadora del Fondo de Impacto (`calculadora/index.html`)
 
@@ -60,7 +69,7 @@ El fondo se calcula sobre la **comisión neta recibida por la agencia después d
 
 ### Formulario
 
-1. **Datos de la empresa y la póliza:** empresa asegurada (texto libre), número de póliza o cotización, compañía aseguradora, ramo de seguro y vigencia.
+1. **Datos de la empresa y la póliza:** empresa asegurada (texto libre, sin sugerencias precargadas), número de póliza o cotización, compañía aseguradora, ramo de seguro y vigencia.
 2. **Parámetros financieros:** prima en pesos colombianos (con separador de miles), % de comisión pactada y % de retefuente, entre 0 y 100, con botones rápidos.
 3. **Asignación al plan de trabajo anual:**
    - Frente de impacto (Bienestar, Prevención, Sostenibilidad o Crecimiento), con la lista de proyectos sugeridos para ese frente.
@@ -68,7 +77,7 @@ El fondo se calcula sobre la **comisión neta recibida por la agencia después d
    - Actividad o destino del fondo (texto libre).
    - Desplegable con el enfoque de las charlas: estructura de cinco pasos, duración y materiales.
 
-Los campos de empresa, póliza y prima empiezan vacíos. Los porcentajes empiezan en 15% de comisión y 11% de retefuente.
+Los campos de empresa, póliza y prima empiezan vacíos. El porcentaje de comisión empieza en 15% y el de retefuente en **11%**.
 
 ### Desglose en vivo
 
@@ -80,30 +89,39 @@ Botón **Simulador**: calcula con una prima de prueba, sin alterar el formulario
 
 ### Generar reporte
 
-Botón **Generar reporte**: valida los campos obligatorios (empresa, póliza y prima) y abre una vista con todos los datos, el desglose y el tema de charla. Se puede imprimir o guardar como PDF desde el navegador.
+Botón **Generar reporte**: valida los campos obligatorios (empresa, póliza y prima) y abre una vista con el logo, todos los datos, el desglose y el tema de charla. Se puede imprimir o guardar como PDF desde el navegador. Al imprimir solo se imprime el reporte, sin hojas en blanco.
 
 ### Otros controles
 
 - **Restablecer:** vacía empresa, póliza, prima, actividad y tema, y devuelve los porcentajes a sus valores iniciales.
 - **Tema claro / oscuro:** botón con el símbolo ◐.
-- **Logo y nombre de la agencia:** vuelven a la landing.
+- **Logo y nombre de la agencia:** llevan a la landing.
+
+### Pie de página
+
+Cuatro tarjetas: **Contacto** (fundador y cofundadora), **Dirección** (con ícono de mapa), **Horario** y **Redes sociales** (iconos de WhatsApp, Facebook, Instagram, LinkedIn y Linktree). Debajo, una banda delgada a todo el ancho con el crédito de desarrollo y el nombre de la agencia.
 
 ## Contacto y redes
 
-Los datos de contacto aparecen en la landing y en el pie de la calculadora:
+- **Fundador:** Mateo Ossa Vega, WhatsApp 310 548 6395, mateo@ossavega.com.
+- **Cofundadora:** Paula Andrea Arias, WhatsApp 301 685 6861, paula@ossavega.com.
+- **Dirección:** Carrera 84F # 3C-40, Barrio Belén, Medellín, Antioquia, Colombia. El ícono de mapa abre la ubicación en Google Maps.
+- **Horario:** lunes a jueves de 9:00 a.m. a 5:00 p.m.; viernes de 9:00 a.m. a 2:00 p.m.; sábados, domingos y festivos cerrado.
+- **Redes:** Facebook, Instagram, WhatsApp, LinkedIn y Linktree, cada una en una pestaña nueva.
 
-- Asesora: Paula Andrea Arias, con teléfono y correo.
-- Oficina: Carrera 45 #26-162, Interior 2164, Conjunto Puerta Madera, La Gabriela, Bello, Antioquia.
-- Horario: lunes a viernes de 7:00 a.m. a 6:00 p.m.; sábados de 8:00 a.m. a 12:00 p.m.; domingos y festivos cerrado.
-- Enlace de Linktree de la agencia.
+## Logos e imágenes
 
-Iconos de redes sociales (cada uno abre la red en una pestaña nueva): Facebook, Instagram, WhatsApp y LinkedIn. Las imágenes están en `img/`.
-
-## Logos
-
-- `img/images.jpeg`: logo azul sobre fondo blanco, usado en el encabezado.
+- `img/images.jpeg`: logo azul sobre fondo blanco, usado en el encabezado de ambas páginas y en el reporte. El hero de la landing también lo muestra en una tarjeta blanca.
 - `img/790425311_18092511653243610_8166161408051306571_n.jpg`: logo blanco sobre fondo azul, usado como favicon.
+- `img/personas.jpg`: fotografía del equipo.
+- `img/facebook.png`, `img/instagram.png`, `img/whatapp.png`, `img/linkedin.png`, `img/linktree.png`: iconos de redes.
 - `img/logo.jpeg`: versión anterior, sin uso.
+
+## Identidad visual
+
+- **Color principal:** azul del logo, `#0b6fc4`.
+- **Enlace al desarrollador:** naranja, `#e85d04`.
+- **Tipografía:** la del sistema.
 
 ## Uso local
 
@@ -136,4 +154,4 @@ Al subir imágenes nuevas, agregarlas también con `git add`: el repositorio sol
 
 ## Documentación interna
 
-El contexto del negocio, el brief de la landing, el enfoque de charlas y la memoria de decisiones están en `docs/`, fuera del repositorio. Ver los documentos de origen en `documentos/`.
+El contexto del negocio, el brief de la landing, el enfoque de charlas y la memoria de decisiones están en `docs/`, fuera del repositorio. Los documentos de origen están en `documentos/`.
