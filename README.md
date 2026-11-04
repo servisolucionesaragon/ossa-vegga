@@ -60,7 +60,7 @@ El fondo se calcula sobre la **comisión neta recibida por la agencia después d
 
 ### Formulario
 
-1. **Datos de la empresa y la póliza:** empresa asegurada (texto editable con sugerencias), número de póliza o cotización, compañía aseguradora, ramo de seguro y vigencia.
+1. **Datos de la empresa y la póliza:** empresa asegurada (texto libre), número de póliza o cotización, compañía aseguradora, ramo de seguro y vigencia.
 2. **Parámetros financieros:** prima en pesos colombianos (con separador de miles), % de comisión pactada y % de retefuente, entre 0 y 100, con botones rápidos.
 3. **Asignación al plan de trabajo anual:**
    - Frente de impacto (Bienestar, Prevención, Sostenibilidad o Crecimiento), con la lista de proyectos sugeridos para ese frente.
@@ -86,7 +86,7 @@ Botón **Generar reporte**: valida los campos obligatorios (empresa, póliza y p
 
 - **Restablecer:** vacía empresa, póliza, prima, actividad y tema, y devuelve los porcentajes a sus valores iniciales.
 - **Tema claro / oscuro:** botón con el símbolo ◐.
-- **← Inicio:** vuelve a la landing.
+- **Logo y nombre de la agencia:** vuelven a la landing.
 
 ## Contacto y redes
 
