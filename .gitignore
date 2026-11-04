@@ -1,0 +1,19 @@
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# Dependencias y builds (por si se agregan en el futuro)
+node_modules/
+dist/
+.wrangler/
+
+# Secretos (nunca subir)
+.env
+.env.*
+*.key
+*.pem
