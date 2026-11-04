@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSSA &amp; VEGA — Fondo de Impacto</title>
+  <link rel="icon" type="image/jpeg" href="../img/logo.jpeg">
+  <link rel="apple-touch-icon" href="../img/logo.jpeg">
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #1d2733;
+      --muted: #6b7785;
+      --border: #e3e8ee;
+      --brand: #0b6fc4;
+      --brand-soft: #e4f0fb;
+      --danger: #e5484d;
+      --danger-soft: #fdeceD;
+      --panel: #ffffff;
+      --panel-2: #f3f7fc;
+      --panel-text: #1d2733;
+      --panel-muted: #6b7785;
+      --input: #ffffff;
+      --chip-fg: #ffffff;
+      --radius: 14px;
+    }
+    [data-theme="dark"] {
+      --bg: #0b1220;
+      --card: #121c2e;
+      --text: #e6edf5;
+      --muted: #8a9bb3;
+      --border: #1f2d44;
+      --brand: #3d9be9;
+      --brand-soft: #1b3350;
+      --danger: #ff6369;
+      --danger-soft: #3a1c22;
+      --panel: #ffffff;
+      --panel-2: #f3f7fc;
+      --panel-text: #1d2733;
+      --panel-muted: #6b7785;
+      --input: #0f1a2b;
+      --chip-fg: #06223d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+      padding: 14px 24px; background: var(--card);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 60px; height: 60px; border-radius: 12px; object-fit: cover; display: block;
+    }
+    .brand h1 { font-size: 16px; margin: 0; }
+    .brand small { color: var(--muted); font-size: 12px; }
+    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn {
+      font: inherit; font-size: 13px; cursor: pointer;
+      padding: 8px 14px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--card); color: var(--text);
+    }
+    .btn:hover { border-color: var(--brand); }
+    .btn-primary { background: var(--brand); color: #fff; border-color: var(--brand); font-weight: 600; }
+    .btn-icon { padding: 8px 10px; }
+    main {
+      display: grid; grid-template-columns: minmax(340px, 1fr) minmax(360px, 460px);
+      gap: 24px; padding: 24px; max-width: 1300px; margin: 0 auto;
+    }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 15px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .card h2 .num {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--brand-soft);
+      color: var(--brand); font-size: 12px; display: inline-grid; place-items: center;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .field > label {
+      font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px;
+    }
+    .field > label .hint { font-family: Consolas, monospace; font-size: 12px; }
+    input, select, textarea {
+      font: inherit; font-size: 14px; color: var(--text);
+      background: var(--input); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
+    input.invalid { border-color: var(--danger); }
+    .input-suffix { position: relative; }
+    .input-suffix input { padding-right: 36px; }
+    .input-suffix span {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 14px; pointer-events: none;
+    }
+    .input-prefix { position: relative; }
+    .input-prefix input { padding-left: 30px; font-family: Consolas, monospace; font-size: 15px; }
+    .input-prefix span {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+      padding: 4px 10px; border-radius: 6px;
+      border: 1px solid var(--brand); background: var(--brand); color: var(--chip-fg);
+    }
+    .chip:hover { filter: brightness(1.12); box-shadow: 0 0 0 2px var(--brand-soft); }
+    .error { color: var(--danger); font-size: 12px; min-height: 0; }
+    .error:empty { display: none; }
+
+    /* Panel de desglose */
+    .desglose {
+      background: var(--panel); color: var(--panel-text);
+      border-radius: var(--radius); padding: 20px;
+      position: sticky; top: 88px; align-self: start;
+      border: 1px solid #d5e2f1;
+    }
+    .desglose-head {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+    }
+    .desglose-head .tag {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+      background: #fde8ec; color: #c0392b; padding: 4px 8px; border-radius: 6px;
+    }
+    .desglose-head .live { font-size: 12px; color: var(--brand); }
+    .rule {
+      border: 1px solid #9cc3e8; background: #eaf4fd; color: #0b3d6e;
+      border-radius: 12px; padding: 12px; font-size: 12px; line-height: 1.5; margin-bottom: 14px;
+    }
+    .row {
+      background: var(--panel-2); border: 1px solid #d5e2f1;
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .row .lbl { font-size: 12px; color: var(--panel-muted); }
+    .row .sub { font-family: Consolas, monospace; font-size: 13px; color: var(--panel-text); }
+    .row .val { font-family: Consolas, monospace; font-size: 15px; font-weight: 600; white-space: nowrap; }
+    .row.neg { border-color: #f5b5ba; background: #fdecec; }
+    .row.neg .lbl, .row.neg .val { color: #c0392b; }
+    .row.net { border-color: #9cc3e8; }
+    .row.net .lbl, .row.net .val { color: #0b6fc4; }
+    .fondo {
+      border: 2px solid #0b6fc4; background: linear-gradient(180deg, #eaf4fd, #eaf4fd);
+      border-radius: 14px; padding: 16px; margin: 14px 0;
+    }
+    .fondo .top { display: flex; justify-content: space-between; align-items: center; }
+    .fondo .title { font-size: 12px; font-weight: 700; color: #0b6fc4; letter-spacing: 0.4px; }
+    .fondo .pill {
+      font-size: 11px; font-weight: 700; background: #3d9be9; color: #06223d;
+      padding: 3px 8px; border-radius: 999px;
+    }
+    .fondo .amount {
+      font-family: Consolas, monospace; font-size: 34px; font-weight: 700;
+      color: #0b6fc4; margin: 10px 0 6px;
+    }
+    .fondo .desc { font-size: 12px; color: #4a5a6b; line-height: 1.5; }
+    .fondo .eq {
+      display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid #9cc3e8; font-size: 12px; color: #4a5a6b;
+    }
+    .margen {
+      display: flex; justify-content: space-between; font-size: 12px; color: var(--panel-muted);
+      padding: 10px 2px 0;
+    }
+    .margen b { color: var(--panel-text); font-family: Consolas, monospace; }
+    .placeholder { color: var(--muted); font-size: 13px; text-align: center; padding: 24px 0; }
+
+    /* Modal simulador */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(5, 10, 20, 0.55);
+      display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      width: min(420px, 100%); background: var(--card); color: var(--text);
+      border-radius: 16px; border: 1px solid var(--border); overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-head {
+      padding: 16px 18px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; gap: 12px;
+    }
+    .modal-head h3 { margin: 0 0 2px; font-size: 15px; }
+    .modal-head p { margin: 0; font-size: 12px; color: var(--muted); }
+    .modal-body { padding: 18px; }
+    .slider-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+    input[type="range"] { padding: 0; accent-color: var(--brand); }
+    .sim-result {
+      background: var(--panel); color: var(--panel-text); border-radius: 12px; padding: 16px; margin-top: 16px;
+    }
+    .sim-result .big { font-family: Consolas, monospace; font-size: 28px; font-weight: 700; color: #0b6fc4; margin: 6px 0 12px; }
+    .sim-result .r { display: flex; justify-content: space-between; font-size: 12px; font-family: Consolas, monospace; padding: 4px 0; color: var(--panel-muted); }
+    .sim-result .r b { color: var(--panel-text); font-weight: 600; }
+    .sim-result .r.neg b { color: #c0392b; }
+    .modal-foot {
+      padding: 14px 18px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; gap: 8px;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      background: var(--card); border-top: 1px solid var(--border);
+      padding: 24px; margin-top: 8px;
+    }
+    .footer-grid {
+      max-width: 1300px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;
+    }
+    @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-grid h3 { font-size: 13px; margin: 0 0 8px; color: var(--brand); text-transform: uppercase; letter-spacing: 0.4px; }
+    .footer-grid p { margin: 0 0 4px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .footer-grid a { color: var(--text); text-decoration: none; }
+    .footer-grid a:hover { color: var(--brand); text-decoration: underline; }
+    .footer-bottom {
+      max-width: 1300px; margin: 18px auto 0; padding-top: 14px;
+      border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);
+      text-align: center;
+    }
+    .footer-bottom a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    .footer-bottom a:hover { text-decoration: underline; }
+
+    /* Modal reporte */
+    .modal.rep { width: min(760px, 100%); max-height: 92vh; display: flex; flex-direction: column; }
+    .rep-scroll { overflow-y: auto; background: #f7f8fa; padding: 18px; }
+    #reporte {
+      background: #fff; color: #1d2733; padding: 32px 36px; border-radius: 8px;
+      font-family: "Segoe UI", system-ui, sans-serif; font-size: 13px;
+    }
+    #reporte .rep-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0b6fc4; padding-bottom: 12px; margin-bottom: 8px; }
+    #reporte .rep-brand { font-weight: 800; font-size: 18px; color: #0b6fc4; }
+    #reporte .rep-title { font-size: 15px; font-weight: 600; margin-top: 2px; }
+    #reporte .rep-date { color: #6b7785; font-size: 12px; text-align: right; }
+    #reporte h4 { font-size: 13px; color: #0b6fc4; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+    #reporte table { width: 100%; border-collapse: collapse; }
+    #reporte th, #reporte td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #e3e8ee; vertical-align: top; }
+    #reporte th { width: 45%; color: #4b5663; font-weight: 500; }
+    #reporte td { font-family: Consolas, monospace; }
+    #reporte tr.total th, #reporte tr.total td { font-weight: 700; color: #0a4f8a; background: #e4f0fb; }
+    #reporte tr.neg td { color: #c0392b; }
+    #reporte .rep-note { margin-top: 18px; font-size: 11px; color: #6b7785; line-height: 1.5; border-top: 1px solid #e3e8ee; padding-top: 10px; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #rep-overlay, #rep-overlay * { visibility: visible; }
+      #rep-overlay { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; background: none; padding: 0; }
+      #rep-overlay .modal { box-shadow: none; border: none; max-height: none; width: 100%; }
+      #rep-overlay .rep-scroll { overflow: visible; background: #fff; padding: 0; }
+      #rep-overlay .no-print { display: none !important; }
+      #reporte { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img class="logo" src="../img/logo.jpeg" alt="Logo OSSA & VEGA">
+    <div>
+      <h1>OSSA &amp; VEGA</h1>
+      <small id="hdr-sub">Agencia de Seguros</small>
+    </div>
+  </div>
+  <div class="actions">
+    <a class="btn" href="../index.html">← Inicio</a>
+    <button class="btn" id="btn-simulador" type="button">Simulador</button>
+    <button class="btn btn-primary" id="btn-reporte" type="button">Generar reporte</button>
+    <button class="btn" id="btn-reset" type="button" title="Restablecer valores">Restablecer</button>
+    <button class="btn btn-icon" id="btn-theme" type="button" title="Cambiar tema">◐</button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="card">
+      <h2><span class="num">1</span> Datos de la Empresa y Póliza</h2>
+      <div class="field">
+        <label for="empresa">Empresa asegurada</label>
+        <input id="empresa" type="text" list="empresas-lista" placeholder="Escriba o seleccione una empresa" autocomplete="off">
+        <datalist id="empresas-lista"></datalist>
+        <div class="error" id="err-empresa"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="poliza">Número de póliza o cotización</label>
+          <input id="poliza" type="text" placeholder="Ej.: POL-2026-ARL-7009" autocomplete="off">
+          <div class="error" id="err-poliza"></div>
+        </div>
+        <div class="field">
+          <label for="compania">Compañía aseguradora</label>
+          <select id="compania"></select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="ramo">Ramo de seguro</label>
+          <select id="ramo"></select>
+        </div>
+        <div class="field">
+          <label>Periodo / vigencia</label>
+          <div class="grid-2" style="gap:8px">
+            <input id="vig-inicio" type="number" min="2000" max="2100" value="2026" aria-label="Año de inicio">
+            <input id="vig-fin" type="text" value="2026 - 2027" aria-label="Vigencia completa">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span> Parámetros Financieros de Liquidación</h2>
+      <div class="field">
+        <label for="prima">Prima comercial del seguro ($ COP) <span class="hint" id="prima-hint"></span></label>
+        <div class="input-prefix">
+          <span>$</span>
+          <input id="prima" type="text" inputmode="numeric" placeholder="Ej.: 95.000.000" autocomplete="off">
+        </div>
+        <div class="error" id="err-prima"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="comision">% Comisión pactada agencia</label>
+          <div class="input-suffix">
+            <input id="comision" type="number" min="0" max="100" step="0.5">
+            <span>%</span>
+          </div>
+          <div class="chips" data-target="comision">
+            <button class="chip" type="button" data-v="10">10%</button>
+            <button class="chip" type="button" data-v="12.5">12.5%</button>
+            <button class="chip" type="button" data-v="15">15%</button>
+            <button class="chip" type="button" data-v="18">18%</button>
+            <button class="chip" type="button" data-v="20">20%</button>
+          </div>
+          <div class="error" id="err-comision"></div>
+        </div>
+        <div class="field">
+          <label for="retencion">% Deducción de impuestos (retefuente)</label>
+          <div class="input-suffix">
+            <input id="retencion" type="number" min="0" max="100" step="0.5">
+            <span>%</span>
+          </div>
+          <div class="chips" data-target="retencion">
+            <button class="chip" type="button" data-v="11">11% (estándar)</button>
+            <button class="chip" type="button" data-v="10">10%</button>
+            <button class="chip" type="button" data-v="0">0% (exento)</button>
+          </div>
+          <div class="error" id="err-retencion"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">3</span> Asignación al Plan de Trabajo Anual</h2>
+      <div class="grid-2">
+        <div class="field">
+          <label for="eje">Frente de impacto</label>
+          <select id="eje">
+            <option>Bienestar</option>
+            <option>Prevención</option>
+            <option>Sostenibilidad</option>
+            <option>Crecimiento</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="actividad">Actividad / destino del fondo</label>
+          <input id="actividad" type="text" placeholder="Ej.: Pausas activas y capacitación en seguridad" autocomplete="off">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="desglose" aria-live="polite">
+    <div class="desglose-head">
+      <span class="tag">PASO CRÍTICO</span>
+      <strong style="font-size:13px">DESGLOSE MATEMÁTICO</strong>
+      <span class="live">● En vivo</span>
+    </div>
+
+    <div class="rule">
+      <strong>Regla mandatoria OSSA &amp; VEGA</strong><br>
+      El fondo se calcula exclusivamente sobre la <u>comisión neta recibida por la agencia post-impuestos</u>, jamás sobre el valor de la prima del seguro.
+    </div>
+
+    <div id="desglose-contenido">
+      <div class="row">
+        <div><div class="lbl">Paso 1: Prima comercial</div><div class="sub">Valor facturado</div></div>
+        <div class="val" id="d-prima">$ 0</div>
+      </div>
+      <div class="row">
+        <div><div class="lbl">Paso 2: Comisión bruta (<span id="d-comision-pct">0</span>%)</div><div class="sub">Prima × <span id="d-comision-pct2">0</span>%</div></div>
+        <div class="val" id="d-comision">$ 0</div>
+      </div>
+      <div class="row neg">
+        <div><div class="lbl">Paso 3: Retenciones / impuestos (<span id="d-ret-pct">0</span>%)</div><div class="sub">Comisión × <span id="d-ret-pct2">0</span>%</div></div>
+        <div class="val" id="d-ret">- $ 0</div>
+      </div>
+      <div class="row net">
+        <div><div class="lbl">Paso 4: Comisión neta agencia</div><div class="sub">Comisión bruta − impuestos</div></div>
+        <div class="val" id="d-neta">$ 0</div>
+      </div>
+
+      <div class="fondo">
+        <div class="top">
+          <span class="title">PASO 5: FONDO DE IMPACTO (40%)</span>
+          <span class="pill">40% NETO</span>
+        </div>
+        <div class="amount" id="d-fondo">$ 0</div>
+        <div class="desc">Monto disponible para financiar el Plan de Trabajo Anual de la empresa seleccionada.</div>
+        <div class="eq"><span>Equivalente sobre prima:</span><b id="d-eq">0%</b></div>
+      </div>
+
+      <div class="margen">
+        <span>Margen operación OSSA &amp; VEGA (<span id="d-margen-pct">60</span>% neto):</span>
+        <b id="d-margen">$ 0</b>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <h3>Contacto</h3>
+      <p>Paula Andrea Arias (asesora)</p>
+      <p>Tel. / WhatsApp: <a href="tel:+573016856861">301 685 6861</a></p>
+      <p>Correo: <a href="mailto:paula.arias@asesorsura.com">paula.arias@asesorsura.com</a></p>
+    </div>
+    <div>
+      <h3>Agencia</h3>
+      <p>OSSA &amp; VEGA SEGUROS</p>
+      <p>Carrera 45 #26-162, Interior 2164<br>Conjunto Puerta Madera, La Gabriela, Bello, Antioquia</p>
+      <p>Tel. / WhatsApp: <a href="https://wa.me/573105486395" target="_blank" rel="noopener noreferrer">310 548 6395</a></p>
+    </div>
+    <div>
+      <h3>Horario y enlaces</h3>
+      <p>Lunes a viernes: 7:00 a.m. – 6:00 p.m.</p>
+      <p>Sábados: 8:00 a.m. – 12:00 p.m.</p>
+      <p>Domingos y festivos: cerrado</p>
+      <p><a href="https://linktr.ee/ossavegaseguros" target="_blank" rel="noopener noreferrer">linktr.ee/ossavegaseguros</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Todos los derechos reservados. Desarrollado por:
+    <a href="https://ssaragon.com/" target="_blank" rel="noopener noreferrer">Servisoluciones Aragón</a>
+  </div>
+</footer>
+
+<!-- Modal: Simulador rápido de impacto -->
+<div class="overlay" id="sim-overlay" role="dialog" aria-modal="true" aria-labelledby="sim-title">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="sim-title">Simulador rápido de impacto</h3>
+        <p>Calcula al vuelo el rubro disponible sin alterar la base de datos</p>
+      </div>
+      <button class="btn btn-icon" id="sim-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Valores rápidos de prima</label>
+        <div class="chips" id="sim-quick"></div>
+      </div>
+      <div class="field">
+        <label for="sim-prima">Valor de la prima ($ COP)</label>
+        <div class="input-prefix">
+          <span>$</span>
+          <input id="sim-prima" type="text" inputmode="numeric" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <div class="slider-head"><span>Comisión</span><b id="sim-comision-lbl" style="color:var(--brand)">20%</b></div>
+        <input id="sim-comision" type="range" min="0" max="100" step="0.5" value="20">
+      </div>
+      <div class="field">
+        <div class="slider-head"><span>Impuestos</span><b id="sim-ret-lbl" style="color:var(--danger)">16%</b></div>
+        <input id="sim-ret" type="range" min="0" max="100" step="0.5" value="16">
+      </div>
+
+      <div class="sim-result">
+        <div style="font-size:12px;font-weight:700;color:#0b6fc4;display:flex;justify-content:space-between">
+          <span>FONDO DE IMPACTO (40% NETO)</span><span style="color:var(--panel-muted);font-weight:400">Regla OSSA &amp; VEGA</span>
+        </div>
+        <div class="big" id="sim-fondo">$ 0</div>
+        <div class="r"><span>Comisión bruta:</span><b id="sim-bruta">$ 0</b></div>
+        <div class="r neg"><span id="sim-ret-txt">Retención (16%):</span><b id="sim-ret-val">- $ 0</b></div>
+        <div class="r"><span><b style="color:#0b6fc4">Comisión neta recibida:</b></span><b style="color:#0b6fc4" id="sim-neta">$ 0</b></div>
+        <div class="r"><span>Margen agencia OSSA &amp; VEGA (60%):</span><span id="sim-margen">$ 0</span></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="sim-cerrar" type="button">Cerrar</button>
+      <button class="btn btn-primary" id="sim-ir" type="button">Ir a registrar póliza →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Reporte -->
+<div class="overlay" id="rep-overlay" role="dialog" aria-modal="true" aria-labelledby="rep-title">
+  <div class="modal rep">
+    <div class="modal-head no-print">
+      <div>
+        <h3 id="rep-title">Reporte del Fondo de Impacto</h3>
+        <p>Revise los datos y imprima o guarde como PDF</p>
+      </div>
+      <button class="btn btn-icon" id="rep-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="rep-scroll">
+      <div id="reporte"></div>
+    </div>
+    <div class="modal-foot no-print">
+      <button class="btn" id="rep-cerrar" type="button">Cerrar</button>
+      <button class="btn btn-primary" id="rep-imprimir" type="button">Imprimir / Guardar PDF</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/fondo-impacto.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var FI = window.FondoImpacto;
+  var nf = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+
+  var EMPRESAS = [
+    'AgroIndustrias del Valle S.A.S. (900.452.128-4)'
+  ];
+  var COMPANIAS = [
+    'Suramericana de Seguros (Sura)', 'Seguros Bolívar', 'Seguros del Estado',
+    'Liberty Seguros / HDI', 'Mapfre Seguros', 'Positiva Compañía de Seguros',
+    'Chubb Seguros Colombia', 'Allianz Colombia', 'Axa Colpatria', 'Equidad Seguros'
+  ];
+  var RAMOS = [
+    'Riesgos Laborales (ARL)', 'Vida Grupo', 'Salud Colectiva', 'Todo Riesgo Daño Material',
+    'Responsabilidad Civil', 'Autos y Flotas', 'Cumplimiento y Garantías', 'Transporte de Mercancías'
+  ];
+  var PRIMAS_RAPIDAS = [30000000, 50000000, 100000000, 150000000, 250000000];
+
+  function $(id) { return document.getElementById(id); }
+  function cop(n) { return '$ ' + nf.format(n); }
+  function copNeg(n) { return '- $ ' + nf.format(n); }
+  function parsePesos(s) { var d = String(s).replace(/\D/g, ''); return d === '' ? 0 : Number(d); }
+  function formatPesos(n) { return n ? nf.format(n) : ''; }
+  function llenar(sel, items) {
+    sel.innerHTML = '';
+    items.forEach(function (t) {
+      var o = document.createElement('option');
+      o.textContent = t; o.value = t; sel.appendChild(o);
+    });
+  }
+
+  // ---------- Inicialización de listas ----------
+  EMPRESAS.forEach(function (t) {
+    var o = document.createElement('option');
+    o.value = t;
+    $('empresas-lista').appendChild(o);
+  });
+  llenar($('compania'), COMPANIAS);
+  llenar($('ramo'), RAMOS);
+  $('compania').value = 'Suramericana de Seguros (Sura)';
+  $('ramo').value = 'Riesgos Laborales (ARL)';
+
+  var DEFAULTS = { prima: 95000000, comision: 15, retencion: 16 };
+
+  function setPrima(n) { $('prima').value = formatPesos(n); }
+
+  // ---------- Cálculo principal ----------
+  function leerForm() {
+    return {
+      prima: parsePesos($('prima').value),
+      comisionPct: parseFloat($('comision').value),
+      retencionPct: parseFloat($('retencion').value)
+    };
+  }
+
+  function pctValido(v) { return !isNaN(v) && v >= 0 && v <= 100; }
+
+  // mostrar=true marca los campos con error (se usa al generar el reporte)
+  function validar(datos, mostrar) {
+    var errs = {
+      empresa: $('empresa').value.trim() ? '' : 'Ingrese o seleccione la empresa asegurada.',
+      poliza: $('poliza').value.trim() ? '' : 'Ingrese el número de póliza o cotización.',
+      prima: datos.prima > 0 ? '' : 'Ingrese el valor de la prima.',
+      comision: pctValido(datos.comisionPct) ? '' : 'Debe estar entre 0 y 100.',
+      retencion: pctValido(datos.retencionPct) ? '' : 'Debe estar entre 0 y 100.'
+    };
+    var ok = true;
+    Object.keys(errs).forEach(function (k) {
+      if (errs[k]) ok = false;
+      if (mostrar) {
+        $(k).classList.toggle('invalid', !!errs[k]);
+        $('err-' + k).textContent = errs[k];
+      }
+    });
+    return ok;
+  }
+
+  function pintarDesglose(r) {
+    $('d-prima').textContent = cop(r.prima);
+    $('d-comision').textContent = cop(r.comisionBruta);
+    $('d-comision-pct').textContent = r.comisionPct;
+    $('d-comision-pct2').textContent = r.comisionPct;
+    $('d-ret').textContent = copNeg(r.retenciones);
+    $('d-ret-pct').textContent = r.retencionPct;
+    $('d-ret-pct2').textContent = r.retencionPct;
+    $('d-neta').textContent = cop(r.comisionNeta);
+    $('d-fondo').textContent = cop(r.fondoImpacto);
+    $('d-eq').textContent = r.equivalentePrima.toFixed(2) + '%';
+    $('d-margen').textContent = cop(r.margenOperacion);
+  }
+
+  function pintarVacio() {
+    ['d-prima', 'd-comision', 'd-neta', 'd-fondo', 'd-margen'].forEach(function (id) { $(id).textContent = '$ 0'; });
+    $('d-ret').textContent = '- $ 0';
+    $('d-eq').textContent = '0%';
+  }
+
+  function recalcular() {
+    var datos = leerForm();
+    if (!pctValido(datos.comisionPct) || !pctValido(datos.retencionPct)) { pintarVacio(); return; }
+    pintarDesglose(FI.calcular(datos));
+  }
+
+  // ---------- Chips ----------
+  document.querySelectorAll('.chips[data-target]').forEach(function (grp) {
+    grp.addEventListener('click', function (e) {
+      var b = e.target.closest('.chip');
+      if (!b) return;
+      $(grp.getAttribute('data-target')).value = b.getAttribute('data-v');
+      recalcular();
+    });
+  });
+
+  // ---------- Prima con separador de miles ----------
+  $('prima').addEventListener('input', function (e) {
+    var n = parsePesos(e.target.value);
+    e.target.value = formatPesos(n);
+    recalcular();
+  });
+  ['comision', 'retencion'].forEach(function (id) {
+    $(id).addEventListener('input', recalcular);
+  });
+
+  // ---------- Reset ----------
+  $('btn-reset').addEventListener('click', function () {
+    ['empresa', 'poliza', 'prima', 'actividad'].forEach(function (id) { $(id).value = ''; });
+    $('comision').value = DEFAULTS.comision;
+    $('retencion').value = DEFAULTS.retencion;
+    recalcular();
+  });
+
+  // ---------- Tema ----------
+  $('btn-theme').addEventListener('click', function () {
+    var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  });
+
+  // ---------- Simulador ----------
+  var sim = {
+    prima: $('sim-prima'), comision: $('sim-comision'), ret: $('sim-ret')
+  };
+
+  function recalcularSim() {
+    var prima = parsePesos(sim.prima.value);
+    var c = parseFloat(sim.comision.value);
+    var r = parseFloat(sim.ret.value);
+    $('sim-comision-lbl').textContent = c + '%';
+    $('sim-ret-lbl').textContent = r + '%';
+    $('sim-ret-txt').textContent = 'Retención (' + r + '%):';
+    var res = FI.calcular({ prima: prima, comisionPct: c, retencionPct: r });
+    $('sim-fondo').textContent = cop(res.fondoImpacto);
+    $('sim-bruta').textContent = cop(res.comisionBruta);
+    $('sim-ret-val').textContent = copNeg(res.retenciones);
+    $('sim-neta').textContent = cop(res.comisionNeta);
+    $('sim-margen').textContent = cop(res.margenOperacion);
+  }
+
+  var quick = $('sim-quick');
+  PRIMAS_RAPIDAS.forEach(function (v) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip';
+    b.textContent = '$ ' + (v / 1000000).toFixed(1) + ' M';
+    b.addEventListener('click', function () { sim.prima.value = formatPesos(v); recalcularSim(); });
+    quick.appendChild(b);
+  });
+
+  sim.prima.addEventListener('input', function (e) {
+    e.target.value = formatPesos(parsePesos(e.target.value));
+    recalcularSim();
+  });
+  sim.comision.addEventListener('input', recalcularSim);
+  sim.ret.addEventListener('input', recalcularSim);
+
+  function abrirSim() {
+    sim.prima.value = formatPesos(parsePesos($('prima').value) || 10000000);
+    sim.comision.value = $('comision').value || 0;
+    sim.ret.value = $('retencion').value || 0;
+    recalcularSim();
+    $('sim-overlay').classList.add('open');
+  }
+  function cerrarSim() { $('sim-overlay').classList.remove('open'); }
+
+  $('btn-simulador').addEventListener('click', abrirSim);
+  $('sim-close').addEventListener('click', cerrarSim);
+  $('sim-cerrar').addEventListener('click', cerrarSim);
+  $('sim-overlay').addEventListener('click', function (e) { if (e.target === this) cerrarSim(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { cerrarSim(); cerrarRep(); } });
+
+  $('sim-ir').addEventListener('click', function () {
+    setPrima(parsePesos(sim.prima.value));
+    $('comision').value = sim.comision.value;
+    $('retencion').value = sim.ret.value;
+    cerrarSim();
+    recalcular();
+    $('prima').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  // ---------- Reporte ----------
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function fila(k, v, clase) {
+    return '<tr' + (clase ? ' class="' + clase + '"' : '') + '><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>';
+  }
+
+  function generarReporte() {
+    var datos = leerForm();
+    if (!validar(datos, true)) {
+      var primero = document.querySelector('.invalid');
+      if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    var r = FI.calcular(datos);
+    var fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+    var actividad = $('actividad').value.trim() || 'No especificada';
+
+    var html =
+      '<div class="rep-head"><div><div class="rep-brand">OSSA &amp; VEGA</div>' +
+      '<div class="rep-title">Reporte — Fondo de Impacto</div></div>' +
+      '<div class="rep-date">Fecha de generación<br>' + esc(fecha) + '</div></div>' +
+
+      '<h4>1. Datos de la empresa y póliza</h4><table>' +
+      fila('Empresa asegurada', $('empresa').value.trim()) +
+      fila('Número de póliza o cotización', $('poliza').value.trim()) +
+      fila('Compañía aseguradora', $('compania').value) +
+      fila('Ramo de seguro', $('ramo').value) +
+      fila('Periodo / vigencia', $('vig-inicio').value + ' (' + $('vig-fin').value + ')') +
+      '</table>' +
+
+      '<h4>2. Parámetros financieros</h4><table>' +
+      fila('Prima comercial del seguro', cop(r.prima)) +
+      fila('% Comisión pactada agencia', r.comisionPct + '%') +
+      fila('% Deducción de impuestos (retefuente)', r.retencionPct + '%') +
+      '</table>' +
+
+      '<h4>3. Desglose del cálculo</h4><table>' +
+      fila('Paso 1 · Prima comercial', cop(r.prima)) +
+      fila('Paso 2 · Comisión bruta (prima × ' + r.comisionPct + '%)', cop(r.comisionBruta)) +
+      fila('Paso 3 · Retenciones / impuestos (comisión × ' + r.retencionPct + '%)', copNeg(r.retenciones), 'neg') +
+      fila('Paso 4 · Comisión neta agencia', cop(r.comisionNeta)) +
+      fila('Paso 5 · Fondo de impacto (' + r.fondoPct + '% neto)', cop(r.fondoImpacto), 'total') +
+      fila('Equivalente sobre prima', r.equivalentePrima.toFixed(2) + '%') +
+      fila('Margen operación OSSA & VEGA (' + r.margenPct + '% neto)', cop(r.margenOperacion)) +
+      '</table>' +
+
+      '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
+      fila('Eje de impacto', $('eje').value) +
+      fila('Actividad / destino del fondo', actividad) +
+      '</table>' +
+
+      '<p class="rep-note">Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta ' +
+      'recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
+
+    $('reporte').innerHTML = html;
+    $('rep-overlay').classList.add('open');
+  }
+
+  function cerrarRep() { $('rep-overlay').classList.remove('open'); }
+
+  $('btn-reporte').addEventListener('click', generarReporte);
+  $('rep-close').addEventListener('click', cerrarRep);
+  $('rep-cerrar').addEventListener('click', cerrarRep);
+  $('rep-imprimir').addEventListener('click', function () { window.print(); });
+  $('rep-overlay').addEventListener('click', function (e) { if (e.target === this) cerrarRep(); });
+
+  // ---------- Estado inicial (sin valores por defecto en empresa, póliza y prima) ----------
+  $('comision').value = DEFAULTS.comision;
+  $('retencion').value = DEFAULTS.retencion;
+  recalcular();
+})();
+</script>
+</body>
+</html>

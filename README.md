@@ -10,7 +10,8 @@ Portal para el agente de seguros **OSSA & VEGA**. El primer módulo es la calcul
 ## Estructura
 
 ```
-index.html            Página principal (calculadora Fondo de Impacto)
+index.html            Landing principal (página de inicio)
+calculadora/index.html Calculadora Fondo de Impacto (módulo)
 js/fondo-impacto.js   Lógica de cálculo pura (sin DOM)
 img/logo.jpeg         Logo (encabezado y favicon)
 docs/                 Documentación interna (no se publica)
