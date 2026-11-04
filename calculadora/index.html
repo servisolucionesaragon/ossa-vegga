@@ -221,9 +221,15 @@
     }
     .footer-grid {
       max-width: 1300px; margin: 0 auto;
-      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;
     }
-    @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 1000px) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-mapa {
+      display: inline-flex; width: 40px; height: 40px; border-radius: 50%; align-items: center; justify-content: center;
+      background: var(--brand-soft); color: var(--brand); text-decoration: none; margin-top: 6px;
+    }
+    .footer-mapa:hover { background: var(--brand); color: #fff; }
     .footer-grid h3 { font-size: 13px; margin: 0 0 8px; color: var(--brand); text-transform: uppercase; letter-spacing: 0.4px; }
     .footer-grid p { margin: 0 0 4px; font-size: 13px; color: var(--muted); line-height: 1.5; }
     .footer-grid a { color: var(--text); text-decoration: none; }
@@ -473,28 +479,32 @@
   <div class="footer-grid">
     <div>
       <h3>Contacto</h3>
-      <p>Paula Andrea Arias (asesora)</p>
-      <p>Tel. / WhatsApp: <a href="tel:+573016856861">301 685 6861</a></p>
-      <p>Correo: <a href="mailto:paula.arias@asesorsura.com">paula.arias@asesorsura.com</a></p>
+      <p><strong>OSSA &amp; VEGA SEGUROS</strong></p>
+      <p><strong>Fundador:</strong> Mateo Ossa Vega<br>
+        Tel. / WhatsApp: <a href="tel:+573105486395">310 548 6395</a><br>
+        <a href="mailto:mateo@ossavega.com">mateo@ossavega.com</a></p>
+      <p><strong>Cofundadora:</strong> Paula Andrea Arias<br>
+        Tel. / WhatsApp: <a href="tel:+573016856861">301 685 6861</a><br>
+        <a href="mailto:paula@ossavega.com">paula@ossavega.com</a></p>
     </div>
     <div>
-      <h3>Agencia</h3>
-      <p>OSSA &amp; VEGA SEGUROS</p>
-      <p>Carrera 45 #26-162, Interior 2164<br>Conjunto Puerta Madera, La Gabriela, Bello, Antioquia</p>
-      <p>Tel. / WhatsApp: <a href="https://wa.me/573105486395" target="_blank" rel="noopener noreferrer">310 548 6395</a></p>
+      <h3>Dirección</h3>
+      <p>Carrera 84F # 3C-40<br>Barrio Belén<br>Medellín, Antioquia, Colombia</p>
+      <a class="footer-mapa" href="https://maps.app.goo.gl/doFMH5soDMmMw2Xm8" target="_blank" rel="noopener noreferrer" aria-label="Ver ubicación en Google Maps" title="Ver en Google Maps"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></a>
     </div>
     <div>
-      <h3>Horario y enlaces</h3>
-      <p>Lunes a viernes: 7:00 a.m. – 6:00 p.m.</p>
-      <p>Sábados: 8:00 a.m. – 12:00 p.m.</p>
-      <p>Domingos y festivos: cerrado</p>
-      <p><a href="https://linktr.ee/ossavegaseguros" target="_blank" rel="noopener noreferrer">linktr.ee/ossavegaseguros</a></p>
+      <h3>Horario</h3>
+      <p>Lunes a jueves: 9:00 a.m. – 5:00 p.m.<br>Viernes: 9:00 a.m. – 2:00 p.m.<br>Sábados, domingos y festivos: cerrado</p>
+    </div>
+    <div>
+      <h3>Redes y enlaces</h3>
       <div class="redes calc-redes">
         <a href="https://wa.me/573105486395" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp de OSSA &amp; VEGA" title="WhatsApp"><img src="../img/whatapp.png" alt="" width="24" height="24"></a>
         <a href="https://www.facebook.com/ossavegaseguros/" target="_blank" rel="noopener noreferrer" aria-label="Facebook de OSSA &amp; VEGA" title="Facebook"><img src="../img/facebook.png" alt="" width="24" height="24"></a>
         <a href="https://www.instagram.com/agencia_ossavega" target="_blank" rel="noopener noreferrer" aria-label="Instagram de OSSA &amp; VEGA" title="Instagram"><img src="../img/instagram.png" alt="" width="24" height="24"></a>
-              <a href="https://www.linkedin.com/in/ossavegaseguros/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de OSSA &amp; VEGA" title="LinkedIn"><img src="../img/linkedin.png" alt="" width="24" height="24"></a>
+        <a href="https://www.linkedin.com/in/ossavegaseguros/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de OSSA &amp; VEGA" title="LinkedIn"><img src="../img/linkedin.png" alt="" width="24" height="24"></a>
       </div>
+      <p><a href="https://linktr.ee/ossavegaseguros" target="_blank" rel="noopener noreferrer">linktr.ee/ossavegaseguros</a></p>
     </div>
   </div>
   <div class="footer-bottom">
@@ -583,14 +593,13 @@
   // Sin sugerencias precargadas: la empresa se escribe libremente.
   var EMPRESAS = [];
   var COMPANIAS = [
-    'Suramericana de Seguros (Sura)', 'Seguros Bolívar', 'Mapfre Seguros',
-    'HDI', 'Seguros Mundial', 'Colmena Seguros', 'Allianz Colombia', 'Axa Colpatria'
+    'Suramericana de Seguros (Sura)', 'Seguros Bolívar', 'Seguros del Estado',
+    'HDI', 'Seguros Mundial', 'Colmena Seguros', 'Mapfre Seguros', 'Positiva Compañía de Seguros',
+    'Chubb Seguros Colombia', 'Allianz Colombia', 'Axa Colpatria', 'Equidad Seguros'
   ];
   var RAMOS = [
     'Riesgos Laborales (ARL)', 'Vida Grupo', 'Salud Colectiva', 'Todo Riesgo Daño Material',
-    'Responsabilidad Civil', 'Autos y Flotas', 'Cumplimiento y Garantías', 'Transporte de Mercancías',
-    'Mascotas', 'Hogar', 'Vida protección de créditos',
-    'Movi Sura (compra de vehículo nuevo o usado, pignoración, compra de cartera)'
+    'Responsabilidad Civil', 'Autos y Flotas', 'Cumplimiento y Garantías', 'Transporte de Mercancías'
   ];
   var PRIMAS_RAPIDAS = [30000000, 50000000, 100000000, 150000000, 250000000];
 
