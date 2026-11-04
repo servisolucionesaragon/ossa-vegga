@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OSSA &amp; VEGA — Fondo de Impacto</title>
+  <link rel="icon" type="image/jpeg" href="img/logo.jpeg">
+  <link rel="apple-touch-icon" href="img/logo.jpeg">
   <style>
     :root {
       --bg: #f4f6f8;
@@ -56,9 +58,7 @@
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .logo {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: var(--brand); color: #fff; font-weight: 800;
-      display: grid; place-items: center; letter-spacing: 0.5px;
+      width: 40px; height: 40px; border-radius: 10px; object-fit: cover; display: block;
     }
     .brand h1 { font-size: 16px; margin: 0; }
     .brand small { color: var(--muted); font-size: 12px; }
@@ -249,7 +249,7 @@
 
 <header>
   <div class="brand">
-    <div class="logo">OV</div>
+    <img class="logo" src="img/logo.jpeg" alt="Logo OSSA & VEGA">
     <div>
       <h1>OSSA &amp; VEGA</h1>
       <small id="hdr-sub">Fondo de Impacto · 40% sobre comisión neta</small>
