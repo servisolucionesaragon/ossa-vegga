@@ -236,6 +236,16 @@
     .footer-bottom a { color: var(--brand); text-decoration: none; font-weight: 600; }
     .footer-bottom a:hover { text-decoration: underline; }
 
+    /* Frente y charlas */
+    .frente-hint { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+    .charla-info {
+      margin-top: 14px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px;
+      background: #f5f9fd; font-size: 13px; color: var(--text);
+    }
+    .charla-info summary { cursor: pointer; font-weight: 600; color: var(--brand); }
+    .charla-info p { margin: 10px 0; color: var(--muted); }
+    .charla-info ol { margin: 6px 0 10px 18px; padding: 0; color: var(--muted); }
+
     /* Modal reporte */
     .modal.rep { width: min(760px, 100%); max-height: 92vh; display: flex; flex-direction: column; }
     .rep-scroll { overflow-y: auto; background: #f7f8fa; padding: 18px; }
@@ -375,12 +385,32 @@
             <option>Sostenibilidad</option>
             <option>Crecimiento</option>
           </select>
+          <div class="frente-hint" id="frente-hint"></div>
         </div>
         <div class="field">
-          <label for="actividad">Actividad / destino del fondo</label>
-          <input id="actividad" type="text" placeholder="Ej.: Pausas activas y capacitación en seguridad" autocomplete="off">
+          <label for="tema">Tema de charla</label>
+          <select id="tema"></select>
         </div>
       </div>
+      <div class="field">
+        <label for="actividad">Actividad / destino del fondo</label>
+        <input id="actividad" type="text" placeholder="Ej.: Charla de manejo del estrés para el área de producción" autocomplete="off">
+      </div>
+      <details class="charla-info">
+        <summary>Enfoque de las charlas: estructura y requisitos</summary>
+        <p><strong>Experiencias memorables con sentido humano y vital.</strong> Buscan que el colaborador se reconozca como ser humano integral y que lo aprendido trascienda su vida personal.</p>
+        <p><strong>Estructura de cada sesión (la misma para todos los temas):</strong></p>
+        <ol>
+          <li>Conexión con el aquí y el ahora.</li>
+          <li>Experiencia vivencial y simbólica.</li>
+          <li>Reflexión individual y colectiva.</li>
+          <li>Aplicación práctica a la empresa.</li>
+          <li>Proyección a la vida personal y social.</li>
+        </ol>
+        <p><strong>Duración:</strong> 1 hora, o según necesidad de la empresa.<br>
+        <strong>Facilitación:</strong> psicóloga o facilitadora, según el tema.<br>
+        <strong>Materiales (los facilita la empresa):</strong> hojas de papel reciclable o de colores, marcadores, esferos o lápices, cinta o material de apoyo, y equipo de proyección y sonido si es en sala.</p>
+      </details>
     </div>
   </section>
 
@@ -659,6 +689,7 @@
   // ---------- Reset ----------
   $('btn-reset').addEventListener('click', function () {
     ['empresa', 'poliza', 'prima', 'actividad'].forEach(function (id) { $(id).value = ''; });
+    $('tema').value = '';
     $('comision').value = DEFAULTS.comision;
     $('retencion').value = DEFAULTS.retencion;
     recalcular();
@@ -730,6 +761,38 @@
     $('prima').scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 
+  // ---------- Temas de charla y frentes (documento base y enfoque de charlas) ----------
+  var TEMAS = [
+    { grupo: 'Personales', items: ['Manejo del estrés y las emociones', 'Comunicación consciente', 'Proyecto de vida', 'Liderazgo personal', 'Autocuidado y bienestar integral'] },
+    { grupo: 'Organizacionales', items: ['Cultura organizacional', 'Trabajo en equipo', 'Liderazgo consciente', 'Servicio al cliente', 'Gestión del cambio', 'Seguridad y salud en el trabajo (SST)'] },
+    { grupo: 'Sociales y de impacto', items: ['Convivencia y respeto', 'Sostenibilidad y cuidado del entorno', 'Relación con otros seres vivos', 'Responsabilidad social', 'Ética y valores'] }
+  ];
+  var FRENTES_PROYECTOS = {
+    'Bienestar': 'Salud mental · prevención del riesgo psicosocial · formación · clima organizacional · cumplimiento normativo · plan de trabajo ARL · fortalecimiento de pequeños negocios · mentoría y conexión con aliados · educación inclusiva y desarrollo comunitario.',
+    'Prevención': 'Seguridad y gestión de riesgos.',
+    'Sostenibilidad': 'Economía circular y reciclaje · uso responsable del agua y otros recursos · huertas en hogar y empresa · prácticas ESG · reducción de huella ambiental.',
+    'Crecimiento': 'Módulo de Crecimiento Empresarial ("Shark Tank de impacto"): nuevas ideas de negocio, emprendimientos locales o de colaboradores, y pequeñas empresas con alto potencial.'
+  };
+
+  (function initTemas() {
+    var sel = $('tema');
+    var vacio = document.createElement('option');
+    vacio.value = ''; vacio.textContent = '— Seleccione un tema —';
+    sel.appendChild(vacio);
+    TEMAS.forEach(function (g) {
+      var og = document.createElement('optgroup');
+      og.label = g.grupo;
+      g.items.forEach(function (t) {
+        var o = document.createElement('option');
+        o.value = t; o.textContent = t; og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+    function pintarFrente() { $('frente-hint').textContent = 'Proyectos del frente: ' + FRENTES_PROYECTOS[$('eje').value]; }
+    $('eje').addEventListener('change', pintarFrente);
+    pintarFrente();
+  })();
+
   // ---------- Reporte ----------
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -780,6 +843,7 @@
 
       '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
       fila('Eje de impacto', $('eje').value) +
+      fila('Tema de charla', $('tema').value || 'No seleccionado') +
       fila('Actividad / destino del fondo', actividad) +
       '</table>' +
 
