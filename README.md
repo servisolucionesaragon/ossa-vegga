@@ -1,6 +1,6 @@
 # OSSA & VEGA — Portal web
 
-Portal para el agente de seguros **OSSA & VEGA**. El primer módulo es la calculadora **Fondo de Impacto**: calcula, monitorea y registra el 40% de la comisión neta post-impuestos de cada póliza, para reinvertirlo en actividades de prevención, salud y bienestar de cada cliente.
+Portal para el agente de seguros **OSSA & VEGA**. El primer módulo es la calculadora **Fondo de Impacto**: calcula y registra el 40% de la comisión neta post-impuestos de cada póliza, para reinvertirlo en bienestar, prevención, sostenibilidad y crecimiento de las empresas aliadas.
 
 ## Demo
 
@@ -12,8 +12,13 @@ Portal para el agente de seguros **OSSA & VEGA**. El primer módulo es la calcul
 ```
 index.html            Página principal (calculadora Fondo de Impacto)
 js/fondo-impacto.js   Lógica de cálculo pura (sin DOM)
-docs/CONTEXTO.md      Contexto de negocio y reglas
-docs/MEMORIA.md       Registro de decisiones y cambios
+img/logo.jpeg         Logo (encabezado y favicon)
+docs/                 Documentación interna (no se publica)
+  CONTEXTO.md         Negocio, reglas y datos del Fondo de Impacto
+  LANDING.md          Brief de la landing principal (pendiente)
+  CHARLAS.md          Enfoque del plan de trabajo: charlas
+  MEMORIA.md          Decisiones, cambios y pendientes
+documentos/           Documentos comerciales fuente (local, no versionado)
 README.md             Este archivo
 ```
 
@@ -48,13 +53,15 @@ Funciones de la pantalla:
 
 - **Datos de empresa y póliza:** empresa asegurada (editable), número de póliza o cotización, compañía aseguradora, ramo y vigencia.
 - **Parámetros:** prima (con separador de miles) y porcentajes de comisión y retefuente entre 0 y 100, con botones rápidos.
-- **Asignación:** eje de impacto (Prevención, Salud, Bienestar) y actividad.
+- **Asignación:** frente de impacto (Bienestar, Prevención, Sostenibilidad, Crecimiento) y actividad.
 - **Simulador:** cálculo rápido sin alterar los datos del formulario.
 - **Generar reporte:** vista con todos los datos y el desglose, lista para imprimir o guardar como PDF.
 
 ## Despliegue
 
-El repositorio está conectado a **Cloudflare Workers (Pages / Static Assets)**. Cada `push` a la rama `main` despliega automáticamente la versión nueva en https://ossa-vegga.servisolucionesti.workers.dev. No hay paso de build: se sirve la carpeta tal cual.
+El repositorio está conectado a **Cloudflare Workers (Static Assets)**. Cada `push` a la rama `main` despliega automáticamente la versión nueva. No hay paso de build.
+
+El archivo `.assetsignore` excluye de la publicación `docs/`, `documentos/` y los archivos de configuración. Así la documentación interna no queda accesible en la web.
 
 Flujo de trabajo:
 
@@ -63,6 +70,6 @@ Flujo de trabajo:
 3. `git add`, `git commit` y `git push origin main`.
 4. Esperar el despliegue en el panel de Cloudflare y revisar la URL pública.
 
-## Próximos pasos
+## Documentación
 
-Ver la sección de pendientes en [docs/MEMORIA.md](docs/MEMORIA.md).
+Empezar por [docs/CONTEXTO.md](docs/CONTEXTO.md) y revisar [docs/MEMORIA.md](docs/MEMORIA.md) para los pendientes.

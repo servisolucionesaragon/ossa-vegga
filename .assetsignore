@@ -1,0 +1,8 @@
+# Archivos que NO se publican en Cloudflare Workers (solo sirve la página).
+# Documentación interna y documentos comerciales.
+docs
+documentos
+README.md
+.gitignore
+.assetsignore
+.git

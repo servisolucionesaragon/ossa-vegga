@@ -12,6 +12,10 @@ node_modules/
 dist/
 .wrangler/
 
+# Documentación interna y documentos comerciales (solo local, no versionar)
+documentos/
+docs/
+
 # Secretos (nunca subir)
 .env
 .env.*
