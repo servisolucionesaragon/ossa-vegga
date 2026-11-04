@@ -214,6 +214,28 @@
       display: flex; justify-content: space-between; gap: 8px;
     }
 
+    /* Footer */
+    footer.site-footer {
+      background: var(--card); border-top: 1px solid var(--border);
+      padding: 24px; margin-top: 8px;
+    }
+    .footer-grid {
+      max-width: 1300px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;
+    }
+    @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-grid h3 { font-size: 13px; margin: 0 0 8px; color: var(--brand); text-transform: uppercase; letter-spacing: 0.4px; }
+    .footer-grid p { margin: 0 0 4px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .footer-grid a { color: var(--text); text-decoration: none; }
+    .footer-grid a:hover { color: var(--brand); text-decoration: underline; }
+    .footer-bottom {
+      max-width: 1300px; margin: 18px auto 0; padding-top: 14px;
+      border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);
+      text-align: center;
+    }
+    .footer-bottom a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    .footer-bottom a:hover { text-decoration: underline; }
+
     /* Modal reporte */
     .modal.rep { width: min(760px, 100%); max-height: 92vh; display: flex; flex-direction: column; }
     .rep-scroll { overflow-y: auto; background: #f7f8fa; padding: 18px; }
@@ -408,6 +430,34 @@
     </div>
   </aside>
 </main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <h3>Contacto</h3>
+      <p>Paula Andrea Arias (asesora)</p>
+      <p>Tel. / WhatsApp: <a href="tel:+573016856861">301 685 6861</a></p>
+      <p>Correo: <a href="mailto:paula.arias@asesorsura.com">paula.arias@asesorsura.com</a></p>
+    </div>
+    <div>
+      <h3>Agencia</h3>
+      <p>OSSA &amp; VEGA SEGUROS</p>
+      <p>Carrera 45 #26-162, Interior 2164<br>Conjunto Puerta Madera, La Gabriela, Bello, Antioquia</p>
+      <p>Tel. / WhatsApp: <a href="https://wa.me/573105486395" target="_blank" rel="noopener noreferrer">310 548 6395</a></p>
+    </div>
+    <div>
+      <h3>Horario y enlaces</h3>
+      <p>Lunes a viernes: 7:00 a.m. – 6:00 p.m.</p>
+      <p>Sábados: 8:00 a.m. – 12:00 p.m.</p>
+      <p>Domingos y festivos: cerrado</p>
+      <p><a href="https://linktr.ee/ossavegaseguros" target="_blank" rel="noopener noreferrer">linktr.ee/ossavegaseguros</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Todos los derechos reservados. Desarrollado por:
+    <a href="https://ssaragon.com/" target="_blank" rel="noopener noreferrer">Servisoluciones Aragón</a>
+  </div>
+</footer>
 
 <!-- Modal: Simulador rápido de impacto -->
 <div class="overlay" id="sim-overlay" role="dialog" aria-modal="true" aria-labelledby="sim-title">
