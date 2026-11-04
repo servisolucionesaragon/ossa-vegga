@@ -236,6 +236,13 @@
     .footer-bottom a { color: var(--brand); text-decoration: none; font-weight: 600; }
     .footer-bottom a:hover { text-decoration: underline; }
 
+    .redes { display: flex; gap: 10px; margin: 8px 0 4px; }
+    .redes a {
+      width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+      background: var(--brand-soft); color: var(--brand); text-decoration: none;
+    }
+    .redes a:hover { background: var(--brand); color: #fff; }
+
     /* Frente y charlas */
     .frente-hint { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
     .charla-info {
@@ -482,7 +489,10 @@
       <p>Sábados: 8:00 a.m. – 12:00 p.m.</p>
       <p>Domingos y festivos: cerrado</p>
       <p><a href="https://linktr.ee/ossavegaseguros" target="_blank" rel="noopener noreferrer">linktr.ee/ossavegaseguros</a></p>
-      <p>Instagram: <a href="https://www.instagram.com/agencia_ossavega" target="_blank" rel="noopener noreferrer">@agencia_ossavega</a></p>
+      <div class="redes calc-redes">
+        <a href="https://www.facebook.com/ossavegaseguros/" target="_blank" rel="noopener noreferrer" aria-label="Facebook de OSSA &amp; VEGA" title="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg></a>
+        <a href="https://www.instagram.com/agencia_ossavega" target="_blank" rel="noopener noreferrer" aria-label="Instagram de OSSA &amp; VEGA" title="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+      </div>
     </div>
   </div>
   <div class="footer-bottom">
