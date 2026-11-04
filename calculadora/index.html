@@ -235,7 +235,7 @@
     .footer-grid a { color: var(--text); text-decoration: none; }
     .footer-grid a:hover { color: var(--brand); text-decoration: underline; }
     .footer-bottom {
-      margin: 18px 0 0; padding: 12px 24px;
+      margin: 18px 0 0; padding: 12px max(24px, calc((100% - 1072px) / 2));
       display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
       font-size: 13px; color: #b8c7d9; background: #0f1f33;
     }
