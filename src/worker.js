@@ -298,6 +298,80 @@ async function api(request, env, url) {
     });
   }
 
+  // ----- Copias de seguridad y borrado (solo admin) -----
+  if (p.startsWith('/api/admin/')) {
+    if (u.rol !== 'admin') return json({ error: 'Solo el administrador puede realizar esta acción.' }, 403);
+
+    if (p === '/api/admin/backup' && m === 'GET') {
+      const rs = await env.DB.prepare(
+        `SELECT r.id, r.creado, us.email AS asesor_email, r.empresa, r.eje, r.tema, r.actividad,
+                r.prima_total, r.comision_neta_total, r.fondo_total
+         FROM registros r JOIN usuarios us ON us.id = r.usuario_id ORDER BY r.id`
+      ).all();
+      const ps = await env.DB.prepare('SELECT * FROM polizas ORDER BY id').all();
+      const copia = { version: 1, creado: new Date().toISOString(), registros: rs.results, polizas: ps.results };
+      const fecha = copia.creado.slice(0, 10);
+      return new Response(JSON.stringify(copia, null, 2), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+          'content-disposition': `attachment; filename="backup-ossa-vega-${fecha}.json"`,
+          'cache-control': 'no-store',
+        },
+      });
+    }
+
+    if (p === '/api/admin/restaurar' && m === 'POST') {
+      const body = await leerJson(request);
+      if (!body || body.confirmar !== 'RESTAURAR') return json({ error: 'Confirmación no válida.' }, 400);
+      const c = body.copia;
+      if (!c || c.version !== 1 || !Array.isArray(c.registros) || !Array.isArray(c.polizas)) {
+        return json({ error: 'El archivo no es una copia de seguridad válida.' }, 400);
+      }
+      if (c.registros.length > 20000 || c.polizas.length > 100000) return json({ error: 'La copia es demasiado grande.' }, 400);
+
+      const usuariosRs = await env.DB.prepare('SELECT id, email FROM usuarios').all();
+      const porEmail = new Map(usuariosRs.results.map((x) => [x.email, x.id]));
+      const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+      const txt = (v) => (v === null || v === undefined ? null : String(v));
+
+      const sentencias = [
+        env.DB.prepare('DELETE FROM polizas'),
+        env.DB.prepare('DELETE FROM registros'),
+      ];
+      for (const r of c.registros) {
+        const uid = porEmail.get(String(r.asesor_email || '').toLowerCase()) || u.id;
+        sentencias.push(env.DB.prepare(
+          `INSERT INTO registros (id, creado, usuario_id, empresa, eje, tema, actividad, prima_total, comision_neta_total, fondo_total)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(num(r.id), txt(r.creado) || '', uid, txt(r.empresa) || '', txt(r.eje), txt(r.tema), txt(r.actividad),
+          num(r.prima_total), num(r.comision_neta_total), num(r.fondo_total)));
+      }
+      for (const q of c.polizas) {
+        sentencias.push(env.DB.prepare(
+          `INSERT INTO polizas (id, registro_id, numero, compania, ramo, vigencia_inicio, vigencia_fin, prima, comision_pct, retencion_pct, comision_bruta, retenciones, comision_neta, fondo)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(q.id === null || q.id === undefined ? null : num(q.id), num(q.registro_id), txt(q.numero) || '', txt(q.compania), txt(q.ramo),
+          txt(q.vigencia_inicio), txt(q.vigencia_fin), num(q.prima), num(q.comision_pct), num(q.retencion_pct),
+          num(q.comision_bruta), num(q.retenciones), num(q.comision_neta), num(q.fondo)));
+      }
+      // D1 agrupa las sentencias en lotes; se ejecutan en orden (borrado, registros y luego pólizas)
+      for (let i = 0; i < sentencias.length; i += 50) {
+        await env.DB.batch(sentencias.slice(i, i + 50));
+      }
+      return json({ ok: true, registros: c.registros.length, polizas: c.polizas.length });
+    }
+
+    if (p === '/api/admin/borrar-registros' && m === 'POST') {
+      const body = await leerJson(request);
+      if (!body || body.confirmar !== 'BORRAR') return json({ error: 'Confirmación no válida.' }, 400);
+      await env.DB.batch([
+        env.DB.prepare('DELETE FROM polizas'),
+        env.DB.prepare('DELETE FROM registros'),
+      ]);
+      return json({ ok: true });
+    }
+  }
+
   return json({ error: 'No encontrado.' }, 404);
 }
 

@@ -81,6 +81,9 @@
       #ovl-rep .mdl-body { overflow: visible; background: #fff; padding: 0; }
       #reporte { padding: 0; border-radius: 0; }
     }
+    .peligro-txt { font-size: 13px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
+    .btn-borrar { color: #fff; background: var(--danger); border-color: var(--danger); font-weight: 600; }
+    .btn-borrar:hover { background: #a32d20; color: #fff; }
   </style>
 </head>
 <body>
@@ -114,6 +117,19 @@
     <div class="detalle-meta" id="det-meta"></div>
     <div style="overflow-x:auto" id="det-tabla"></div>
     <div class="por-poliza" id="det-totales" style="margin-top:14px"></div>
+  </section>
+
+  <section class="card oculto" id="bloque-copias">
+    <h2>Copias de seguridad</h2>
+    <p class="peligro-txt">Descargue una copia de todos los registros y pólizas (archivo JSON) antes de hacer cambios importantes. La restauración reemplaza <strong>todos</strong> los registros actuales por los de la copia. Los usuarios no se incluyen en la copia.</p>
+    <div class="acciones">
+      <button class="btn btn-primario" id="btn-backup" type="button">Descargar copia de seguridad</button>
+      <label class="btn" style="cursor:pointer">Restaurar desde copia…
+        <input type="file" id="archivo-copia" accept="application/json,.json" style="display:none">
+      </label>
+      <button class="btn btn-borrar" id="btn-borrar-todo" type="button">Borrar todos los registros</button>
+    </div>
+    <div class="msg" id="msg-copias"></div>
   </section>
 
   <section class="card oculto" id="bloque-usuarios">
@@ -228,6 +244,7 @@
     document.getElementById('usuario-info').textContent = yo.nombre + ' · ' + (yo.rol === 'admin' ? 'Administrador' : 'Asesor');
     if (yo.rol === 'admin') {
       document.getElementById('bloque-usuarios').classList.remove('oculto');
+      document.getElementById('bloque-copias').classList.remove('oculto');
       cargarUsuarios();
     }
     cargarRegistros();
@@ -404,6 +421,53 @@
   document.getElementById('btn-cerrar-rep').addEventListener('click', function () { document.getElementById('ovl-rep').classList.remove('open'); });
   document.getElementById('btn-imprimir').addEventListener('click', function () { window.print(); });
   document.getElementById('ovl-rep').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
+
+  // ---------- Copias de seguridad y borrado (admin) ----------
+  function descargarCopia() {
+    return fetch('/api/admin/backup', { credentials: 'same-origin' }).then(async function (r) {
+      if (!r.ok) { mensaje('msg-copias', 'No se pudo descargar la copia.'); return false; }
+      var blob = await r.blob();
+      var a = document.createElement('a');
+      var nombre = (r.headers.get('content-disposition') || '').match(/filename="([^"]+)"/);
+      a.href = URL.createObjectURL(blob);
+      a.download = nombre ? nombre[1] : 'backup-ossa-vega.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      return true;
+    });
+  }
+
+  document.getElementById('btn-backup').addEventListener('click', function () {
+    descargarCopia().then(function (ok) { if (ok) mensaje('msg-copias', 'Copia descargada.', true); });
+  });
+
+  document.getElementById('archivo-copia').addEventListener('change', async function (e) {
+    var file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    var copia;
+    try { copia = JSON.parse(await file.text()); }
+    catch (err) { mensaje('msg-copias', 'El archivo no es un JSON válido.'); return; }
+    var texto = prompt('Esto reemplazará TODOS los registros actuales (' + copia.registros.length + ' registros y ' +
+      copia.polizas.length + ' pólizas de la copia).\n\nEscriba RESTAURAR para continuar:');
+    if (texto !== 'RESTAURAR') { mensaje('msg-copias', 'Restauración cancelada.'); return; }
+    var r = await api('/api/admin/restaurar', { method: 'POST', body: JSON.stringify({ copia: copia, confirmar: 'RESTAURAR' }) });
+    if (r.ok) { mensaje('msg-copias', 'Copia restaurada: ' + r.data.registros + ' registros.', true); cargarRegistros(); }
+    else { mensaje('msg-copias', r.data.error || 'No se pudo restaurar la copia.'); }
+  });
+
+  document.getElementById('btn-borrar-todo').addEventListener('click', async function () {
+    if (!confirm('¿Desea borrar TODOS los registros y pólizas?')) return;
+    if (confirm('¿Descargar primero una copia de seguridad?')) {
+      var ok = await descargarCopia();
+      if (!ok) return;
+    }
+    var texto = prompt('Esta acción no se puede deshacer.\n\nEscriba BORRAR para eliminar todos los registros:');
+    if (texto !== 'BORRAR') { mensaje('msg-copias', 'Borrado cancelado.'); return; }
+    var r = await api('/api/admin/borrar-registros', { method: 'POST', body: JSON.stringify({ confirmar: 'BORRAR' }) });
+    if (r.ok) { mensaje('msg-copias', 'Todos los registros fueron borrados.', true); cargarRegistros(); document.getElementById('bloque-detalle').classList.add('oculto'); }
+    else { mensaje('msg-copias', r.data.error || 'No se pudieron borrar los registros.'); }
+  });
 
   iniciar();
 })();
