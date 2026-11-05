@@ -318,6 +318,7 @@
     #reporte table.tabla-pol tr.cab td { font-family: inherit; font-weight: 700; color: #0a4f8a; background: #e4f0fb; }
     #reporte table.tabla-pol td.num { text-align: right; white-space: nowrap; }
     input.invalid, select.invalid { border-color: var(--danger); }
+    .shared-nota { font-size: 12px; font-weight: 400; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -358,6 +359,30 @@
       <p class="lead-small">Una empresa puede tener varias pólizas de distintas aseguradoras y ramos. Registre cada una por separado; el fondo se suma en el desglose.</p>
 
       <div id="polizas"></div>
+
+      <div class="card-inner shared">
+        <div class="pol-titulo">Asignación al plan de trabajo anual <span class="shared-nota">(aplica a todas las pólizas)</span></div>
+        <div class="grid-2" style="margin-top:12px">
+          <div class="field">
+            <label for="eje">Frente de impacto</label>
+            <select id="eje">
+              <option>Bienestar</option>
+              <option>Prevención</option>
+              <option>Sostenibilidad</option>
+              <option>Crecimiento</option>
+            </select>
+            <div class="frente-hint" id="frente-hint"></div>
+          </div>
+          <div class="field">
+            <label for="tema">Tema de charla</label>
+            <select id="tema"></select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="actividad">Actividad / destino del fondo</label>
+          <input id="actividad" type="text" placeholder="Ej.: Charla de manejo del estrés para el área de producción" autocomplete="off">
+        </div>
+      </div>
 
       <details class="charla-info">
         <summary>Enfoque de las charlas: estructura y requisitos</summary>
@@ -644,21 +669,11 @@
       '      </div>' +
       '      <div class="error err-retencion"></div></div>' +
       '  </div>' +
-      '  <div class="grid-2">' +
-      '    <div class="field"><label>Frente de impacto</label>' +
-      '      <select class="f-eje">' + opciones(FRENTES) + '</select>' +
-      '      <div class="frente-hint"></div></div>' +
-      '    <div class="field"><label>Tema de charla</label>' +
-      '      <select class="f-tema">' + opcionesTemas() + '</select></div>' +
-      '  </div>' +
-      '  <div class="field"><label>Actividad / destino del fondo</label>' +
-      '    <input class="f-actividad" type="text" placeholder="Ej.: Charla de manejo del estrés para el área de producción" autocomplete="off"></div>' +
       '</div>';
   }
 
-  function actualizarHint(item) {
-    var eje = item.querySelector('.f-eje').value;
-    item.querySelector('.frente-hint').textContent = 'Proyectos del frente: ' + FRENTES_PROYECTOS[eje];
+  function actualizarHint() {
+    $('frente-hint').textContent = 'Proyectos del frente: ' + FRENTES_PROYECTOS[$('eje').value];
   }
 
   function renumerar() {
@@ -682,7 +697,6 @@
       item.querySelector('.f-comision').value = DEFAULTS.comision;
       item.querySelector('.f-retencion').value = DEFAULTS.retencion;
     }
-    actualizarHint(item);
     renumerar();
     return item;
   }
@@ -696,10 +710,7 @@
       vigFin: item.querySelector('.f-vig-fin').value,
       prima: parsePesos(item.querySelector('.f-prima').value),
       comisionPct: parseFloat(item.querySelector('.f-comision').value),
-      retencionPct: parseFloat(item.querySelector('.f-retencion').value),
-      eje: item.querySelector('.f-eje').value,
-      tema: item.querySelector('.f-tema').value,
-      actividad: item.querySelector('.f-actividad').value.trim()
+      retencionPct: parseFloat(item.querySelector('.f-retencion').value)
     };
   }
 
@@ -780,9 +791,7 @@
     }
     recalcular();
   });
-  polizasEl.addEventListener('change', function (e) {
-    if (e.target.classList.contains('f-eje')) actualizarHint(e.target.closest('.poliza-item'));
-  });
+  $('eje').addEventListener('change', actualizarHint);
   polizasEl.addEventListener('click', function (e) {
     var chip = e.target.closest('.chip');
     if (chip) {
@@ -811,6 +820,8 @@
     $('empresa').value = '';
     $('err-empresa').textContent = '';
     $('empresa').classList.remove('invalid');
+    $('actividad').value = '';
+    $('tema').value = '';
     polizasEl.innerHTML = '';
     agregarPoliza();
     recalcular();
@@ -896,7 +907,7 @@
     var fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
     var items = polizasEl.querySelectorAll('.poliza-item');
     var t = { prima: 0, comisionBruta: 0, retenciones: 0, comisionNeta: 0, fondoImpacto: 0, margen: 0 };
-    var filasPol = '', filasAsig = '';
+    var filasPol = '';
 
     items.forEach(function (it, i) {
       var d = leerPoliza(it);
@@ -907,8 +918,6 @@
         '</td><td>' + esc(d.ramo) + '</td><td>' + esc(d.vigIni + ' (' + d.vigFin + ')') +
         '</td><td class="num">' + esc(cop(r.prima)) + '</td><td class="num">' + r.comisionPct + '%</td><td class="num">' +
         r.retencionPct + '%</td><td class="num">' + esc(cop(r.fondoImpacto)) + '</td></tr>';
-      filasAsig += '<tr><td>' + (i + 1) + '</td><td>' + esc(d.numero) + '</td><td>' + esc(d.eje) +
-        '</td><td>' + esc(d.tema || 'No seleccionado') + '</td><td>' + esc(d.actividad || 'No especificada') + '</td></tr>';
     });
 
     var html =
@@ -935,9 +944,11 @@
       fila('Margen operación OSSA & VEGA (60% neto)', cop(t.margen)) +
       '</table>' +
 
-      '<h4>4. Asignación al plan de trabajo anual</h4>' +
-      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Frente</td><td>Tema de charla</td><td>Actividad / destino</td></tr>' +
-      filasAsig + '</table>' +
+      '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
+      fila('Frente de impacto', $('eje').value) +
+      fila('Tema de charla', $('tema').value || 'No seleccionado') +
+      fila('Actividad / destino del fondo', $('actividad').value.trim() || 'No especificada') +
+      '</table>' +
 
       '<p class="rep-note">Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta ' +
       'recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
@@ -956,7 +967,9 @@
   $('rep-overlay').addEventListener('click', function (e) { if (e.target === this) cerrarRep(); });
 
   // ---------- Temas (charla) y estado inicial ----------
-  // Estado inicial: una póliza vacía, con los porcentajes por defecto
+  // Estado inicial: temas, una póliza vacía y los porcentajes por defecto
+  $('tema').innerHTML = opcionesTemas();
+  actualizarHint();
   agregarPoliza();
   recalcular();
 })();
