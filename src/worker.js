@@ -224,7 +224,7 @@ async function api(request, env, url) {
        FROM registros r JOIN usuarios us ON us.id = r.usuario_id ORDER BY r.id DESC LIMIT 500`
     ).all();
     const ps = await env.DB.prepare(
-      'SELECT registro_id, numero, compania, ramo, vigencia_inicio, vigencia_fin, prima, comision_pct, retencion_pct, fondo FROM polizas ORDER BY id'
+      'SELECT registro_id, numero, compania, ramo, vigencia_inicio, vigencia_fin, prima, comision_pct, retencion_pct, comision_bruta, retenciones, comision_neta, fondo FROM polizas ORDER BY id'
     ).all();
     const porRegistro = new Map();
     for (const pol of ps.results) {

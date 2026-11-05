@@ -42,6 +42,45 @@
     .badge.off { background: #fde8ec; color: var(--danger); }
     .oculto { display: none !important; }
     @media (max-width: 760px) { th, td { font-size: 12px; } }
+    /* Detalle y reporte */
+    .btn-ver { font: inherit; font-size: 12px; cursor: pointer; border: 1px solid var(--brand); background: #fff; color: var(--brand); border-radius: 8px; padding: 4px 10px; }
+    .btn-ver:hover { background: var(--brand); color: #fff; }
+    tr.sel td { background: #f3f8fd; }
+    .detalle-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .detalle-meta { font-size: 13px; color: var(--muted); margin: 6px 0 12px; line-height: 1.6; }
+    .tot td { font-weight: 700; background: #e4f0fb; color: var(--brand-oscuro); }
+    .ovl { position: fixed; inset: 0; background: rgba(5,10,20,.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+    .ovl.open { display: flex; }
+    .mdl { width: min(860px, 100%); max-height: 92vh; display: flex; flex-direction: column; background: #fff; border-radius: 16px; overflow: hidden; }
+    .mdl-head, .mdl-foot { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid var(--borde); }
+    .mdl-foot { border-top: 1px solid var(--borde); border-bottom: none; justify-content: flex-end; }
+    .mdl-body { overflow-y: auto; background: #f7f8fa; padding: 18px; }
+    #reporte { background: #fff; color: #1d2733; padding: 32px 36px; border-radius: 8px; font-family: "Segoe UI", system-ui, sans-serif; font-size: 13px; }
+    #reporte .rep-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0b6fc4; padding-bottom: 12px; margin-bottom: 8px; }
+    #reporte .rep-brand { font-weight: 800; font-size: 18px; color: #0b6fc4; }
+    #reporte .rep-title { font-size: 15px; font-weight: 600; margin-top: 2px; }
+    #reporte .rep-date { color: #6b7785; font-size: 12px; text-align: right; }
+    #reporte h4 { font-size: 13px; color: #0b6fc4; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: .4px; }
+    #reporte table { width: 100%; border-collapse: collapse; }
+    #reporte th, #reporte td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #e3e8ee; vertical-align: top; }
+    #reporte th { width: 45%; color: #4b5663; font-weight: 500; }
+    #reporte td { font-family: Consolas, monospace; }
+    #reporte table.tabla-pol th, #reporte table.tabla-pol td { width: auto; font-size: 11px; padding: 6px 5px; }
+    #reporte table.tabla-pol tr.cab td { font-family: inherit; font-weight: 700; color: #0a4f8a; background: #e4f0fb; }
+    #reporte table.tabla-pol td.num { text-align: right; white-space: nowrap; }
+    #reporte tr.total th, #reporte tr.total td { font-weight: 700; color: #0a4f8a; background: #e4f0fb; }
+    #reporte tr.neg td { color: #c0392b; }
+    #reporte .rep-note { margin-top: 18px; font-size: 11px; color: #6b7785; line-height: 1.5; border-top: 1px solid #e3e8ee; padding-top: 10px; }
+    @media print {
+      @page { margin: 12mm; }
+      html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+      body > *:not(#ovl-rep) { display: none !important; }
+      #ovl-rep { display: block !important; position: static !important; inset: auto !important; background: none !important; padding: 0 !important; }
+      #ovl-rep .mdl { box-shadow: none; border: none; max-height: none; width: 100%; overflow: visible; }
+      #ovl-rep .mdl-head, #ovl-rep .mdl-foot { display: none !important; }
+      #ovl-rep .mdl-body { overflow: visible; background: #fff; padding: 0; }
+      #reporte { padding: 0; border-radius: 0; }
+    }
   </style>
 </head>
 <body>
@@ -64,6 +103,19 @@
     <div id="tabla-registros"></div>
   </section>
 
+  <section class="card oculto" id="bloque-detalle">
+    <div class="detalle-head">
+      <h2 style="margin:0;font-size:16px" id="det-titulo">Simulación</h2>
+      <div class="acciones">
+        <button class="btn btn-primario" id="btn-reporte-reg" type="button">Generar reporte</button>
+        <button class="btn" id="btn-cerrar-det" type="button">Cerrar</button>
+      </div>
+    </div>
+    <div class="detalle-meta" id="det-meta"></div>
+    <div style="overflow-x:auto" id="det-tabla"></div>
+    <div class="por-poliza" id="det-totales" style="margin-top:14px"></div>
+  </section>
+
   <section class="card oculto" id="bloque-usuarios">
     <h2>Usuarios</h2>
     <form class="form-grid" id="form-nuevo">
@@ -78,6 +130,19 @@
     <div id="tabla-usuarios" style="margin-top:12px"></div>
   </section>
 </main>
+
+<div class="ovl" id="ovl-rep" role="dialog" aria-modal="true">
+  <div class="mdl">
+    <div class="mdl-head">
+      <strong>Reporte del Fondo de Impacto</strong>
+      <div class="acciones">
+        <button class="btn btn-primario" id="btn-imprimir" type="button">Imprimir / Guardar PDF</button>
+        <button class="btn" id="btn-cerrar-rep" type="button">Cerrar</button>
+      </div>
+    </div>
+    <div class="mdl-body"><div id="reporte"></div></div>
+  </div>
+</div>
 
 <dialog id="dlg-clave" style="border:1px solid var(--borde);border-radius:14px;padding:20px;width:min(380px,92vw)">
   <form id="form-clave" method="dialog">
@@ -128,10 +193,11 @@
         '</td><td><strong>' + esc(r.empresa) + '</strong><ul class="polizas">' + polizas + '</ul></td>' +
         '<td>' + esc(r.eje) + '<br><span class="polizas">' + esc(r.tema) + '</span></td>' +
         '<td class="num">' + (r.polizas || []).length + '</td>' +
-        '<td class="num">' + cop(r.prima_total) + '</td><td class="num">' + cop(r.fondo_total) + '</td></tr>';
+        '<td class="num">' + cop(r.prima_total) + '</td><td class="num">' + cop(r.fondo_total) + '</td>' +
+        '<td><button class="btn-ver" type="button" data-ver="' + r.id + '">Ver simulación</button></td></tr>';
     }).join('');
     cont.innerHTML = '<div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Fecha</th><th>Asesor</th><th>Empresa y pólizas</th>' +
-      '<th>Frente y tema</th><th>Pólizas</th><th>Prima total</th><th>Fondo total</th></tr></thead><tbody>' + filas + '</tbody></table></div>';
+      '<th>Frente y tema</th><th>Pólizas</th><th>Prima total</th><th>Fondo total</th><th></th></tr></thead><tbody>' + filas + '</tbody></table></div>';
   }
 
   async function cargarRegistros() {
@@ -235,6 +301,109 @@
     if (r.ok) { dlg.close(); mensaje('msg-registros', 'Contraseña cambiada.', true); }
     else { mensaje('msg-clave', r.data.error || 'No se pudo cambiar.'); }
   });
+
+  // ---------- Simulación y reporte de un registro ----------
+  function fila(k, v, clase) {
+    return '<tr' + (clase ? ' class="' + clase + '"' : '') + '><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>';
+  }
+  function copNeg(n) { return '- ' + cop(n); }
+  function fechaLarga(s) {
+    var d = new Date(String(s || '').replace(' ', 'T') + 'Z');
+    return isNaN(d) ? String(s || '') : d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function totalesDe(r) {
+    var t = { prima: 0, bruta: 0, ret: 0, neta: 0, fondo: 0 };
+    (r.polizas || []).forEach(function (p) {
+      t.prima += p.prima; t.bruta += p.comision_bruta; t.ret += p.retenciones; t.neta += p.comision_neta; t.fondo += p.fondo;
+    });
+    return t;
+  }
+
+  function mostrarDetalle(id) {
+    var r = registros.find(function (x) { return String(x.id) === String(id); });
+    if (!r) return;
+    var t = totalesDe(r);
+    document.querySelectorAll('tr.sel').forEach(function (e) { e.classList.remove('sel'); });
+    document.getElementById('det-titulo').textContent = 'Simulación · ' + r.empresa + ' (N.º ' + r.id + ')';
+    document.getElementById('det-meta').innerHTML =
+      'Asesor: ' + esc(r.asesor) + ' · Fecha: ' + esc(fechaCorta(r.creado)) + '<br>' +
+      'Frente: ' + esc(r.eje || '—') + ' · Tema de charla: ' + esc(r.tema || 'No seleccionado') + '<br>' +
+      'Actividad / destino: ' + esc(r.actividad || 'No especificada');
+    var filas = (r.polizas || []).map(function (p) {
+      return '<tr><td>' + esc(p.numero) + '</td><td>' + esc(p.compania) + '</td><td>' + esc(p.ramo) + '</td>' +
+        '<td class="num">' + cop(p.prima) + '</td><td class="num">' + p.comision_pct + '%</td><td class="num">' + p.retencion_pct + '%</td>' +
+        '<td class="num">' + cop(p.comision_bruta) + '</td><td class="num">' + copNeg(p.retenciones) + '</td>' +
+        '<td class="num">' + cop(p.comision_neta) + '</td><td class="num"><strong>' + cop(p.fondo) + '</strong></td></tr>';
+    }).join('');
+    document.getElementById('det-tabla').innerHTML =
+      '<table><thead><tr><th>Póliza</th><th>Compañía</th><th>Ramo</th><th>Prima</th><th>% Com.</th><th>% Ret.</th>' +
+      '<th>Comisión bruta</th><th>Retenciones</th><th>Comisión neta</th><th>Fondo</th></tr></thead><tbody>' + filas +
+      '<tr class="tot"><td colspan="3">Totales</td><td class="num">' + cop(t.prima) + '</td><td></td><td></td>' +
+      '<td class="num">' + cop(t.bruta) + '</td><td class="num">' + copNeg(t.ret) + '</td><td class="num">' + cop(t.neta) + '</td>' +
+      '<td class="num">' + cop(t.fondo) + '</td></tr></tbody></table>';
+    document.getElementById('det-totales').innerHTML =
+      '<div class="row"><div class="lbl">Fondo de impacto total (40% de la comisión neta)</div><div class="val">' + cop(t.fondo) + '</div></div>' +
+      '<div class="lbl" style="font-size:12px;color:var(--muted)">Equivalente sobre prima total: ' +
+      (t.prima > 0 ? (t.fondo / t.prima * 100).toFixed(2) : '0.00') + '%</div>';
+    document.getElementById('bloque-detalle').dataset.id = r.id;
+    document.getElementById('bloque-detalle').classList.remove('oculto');
+    var fila = document.querySelector('button[data-ver="' + r.id + '"]');
+    if (fila) fila.closest('tr').classList.add('sel');
+    document.getElementById('bloque-detalle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function generarReporteRegistro() {
+    var id = document.getElementById('bloque-detalle').dataset.id;
+    var r = registros.find(function (x) { return String(x.id) === String(id); });
+    if (!r) return;
+    var t = totalesDe(r);
+    var filasPol = (r.polizas || []).map(function (p, i) {
+      return '<tr><td>' + (i + 1) + '</td><td>' + esc(p.numero) + '</td><td>' + esc(p.compania) + '</td><td>' + esc(p.ramo) +
+        '</td><td>' + esc(p.vigencia_inicio + ' (' + p.vigencia_fin + ')') + '</td><td class="num">' + cop(p.prima) +
+        '</td><td class="num">' + p.comision_pct + '%</td><td class="num">' + p.retencion_pct + '%</td><td class="num">' + cop(p.fondo) + '</td></tr>';
+    }).join('');
+    var html =
+      '<div class="rep-head"><div style="display:flex;align-items:center;gap:14px"><img src="../img/images.jpeg" alt="Logo OSSA &amp; VEGA" style="width:64px;height:64px;border-radius:10px"><div><div class="rep-brand">OSSA &amp; VEGA</div>' +
+      '<div class="rep-title">Reporte — Fondo de Impacto</div></div></div>' +
+      '<div class="rep-date">Fecha de generación<br>' + esc(new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })) + '</div></div>' +
+      '<h4>1. Empresa asegurada</h4><table>' +
+      fila('Empresa asegurada', r.empresa) + fila('Registrado por', r.asesor) +
+      fila('Fecha de registro', fechaLarga(r.creado)) + fila('Número de pólizas', String((r.polizas || []).length)) +
+      '</table>' +
+      '<h4>2. Pólizas registradas</h4>' +
+      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Compañía</td><td>Ramo</td><td>Vigencia</td><td>Prima</td><td>% Com.</td><td>% Ret.</td><td>Fondo</td></tr>' +
+      filasPol + '</table>' +
+      '<h4>3. Desglose total</h4><table>' +
+      fila('Paso 1 · Prima comercial total', cop(t.prima)) +
+      fila('Paso 2 · Comisión bruta total', cop(t.bruta)) +
+      fila('Paso 3 · Retenciones / impuestos total', copNeg(t.ret), 'neg') +
+      fila('Paso 4 · Comisión neta agencia total', cop(t.neta)) +
+      fila('Paso 5 · Fondo de impacto total (40% neto)', cop(t.fondo), 'total') +
+      fila('Equivalente sobre prima total', (t.prima > 0 ? (t.fondo / t.prima * 100) : 0).toFixed(2) + '%') +
+      fila('Margen operación OSSA & VEGA (60% neto)', cop(t.neta - t.fondo)) +
+      '</table>' +
+      '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
+      fila('Frente de impacto', r.eje || '—') + fila('Tema de charla', r.tema || 'No seleccionado') +
+      fila('Actividad / destino del fondo', r.actividad || 'No especificada') +
+      '</table>' +
+      '<p class="rep-note">Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
+    document.getElementById('reporte').innerHTML = html;
+    document.getElementById('ovl-rep').classList.add('open');
+  }
+
+  document.getElementById('tabla-registros').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-ver]');
+    if (b) mostrarDetalle(b.getAttribute('data-ver'));
+  });
+  document.getElementById('btn-cerrar-det').addEventListener('click', function () {
+    document.getElementById('bloque-detalle').classList.add('oculto');
+    document.querySelectorAll('tr.sel').forEach(function (e) { e.classList.remove('sel'); });
+  });
+  document.getElementById('btn-reporte-reg').addEventListener('click', generarReporteRegistro);
+  document.getElementById('btn-cerrar-rep').addEventListener('click', function () { document.getElementById('ovl-rep').classList.remove('open'); });
+  document.getElementById('btn-imprimir').addEventListener('click', function () { window.print(); });
+  document.getElementById('ovl-rep').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
 
   iniciar();
 })();
