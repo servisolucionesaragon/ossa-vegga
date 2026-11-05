@@ -1,9 +1,11 @@
 # OSSA & VEGA — Portal web
 
-Portal de **OSSA & VEGA Seguros**, agencia de seguros con el lema *"Liderando con Sentido"*. El sitio tiene dos páginas:
+Portal de **OSSA & VEGA Seguros**, agencia de seguros con el lema *"Liderando con Sentido"*. El sitio tiene cuatro partes:
 
 - **Landing principal** (`/`): presenta la agencia, su filosofía, los frentes de impacto, el Fondo de Impacto y los datos de contacto.
-- **Calculadora del Fondo de Impacto** (`/calculadora/`): calcula y registra el rubro de impacto de cada póliza.
+- **Calculadora del Fondo de Impacto** (`/calculadora/`): calcula el rubro de impacto de una o varias pólizas por empresa, y guarda el registro.
+- **Acceso** (`/acceso/`): inicio de sesión del personal. El primer ingreso crea al administrador.
+- **Panel de registros** (`/panel/`): para usuarios con sesión. Consulta registros, exporta a Excel y, para el administrador, gestiona usuarios y copias de seguridad.
 
 ## Enlaces
 
@@ -15,9 +17,14 @@ Portal de **OSSA & VEGA Seguros**, agencia de seguros con el lema *"Liderando co
 ```
 index.html                       Landing principal
 calculadora/index.html           Calculadora Fondo de Impacto
+acceso/index.html                Inicio de sesión y creación del primer administrador
+panel/index.html                 Panel de registros, usuarios y copias de seguridad
 js/fondo-impacto.js              Lógica de cálculo (sin DOM)
+src/worker.js                    API (Cloudflare Worker): usuarios, sesiones, registros, exportación y copias
+migrations/0001_init.sql         Esquema de la base de datos D1
+wrangler.jsonc                   Configuración del Worker, los archivos estáticos y la base D1
 img/                             Logos, fotografía del equipo e iconos de redes
-.assetsignore                    Archivos que no se publican (docs, documentos)
+.assetsignore                    Archivos que no se publican (docs, documentos, src, migrations)
 .gitignore                       Archivos que no se versionan
 README.md                        Este archivo
 ```
@@ -36,10 +43,8 @@ Secciones, en orden:
 3. **Frentes de impacto:** Bienestar humano, Prevención y protección, Sostenibilidad y medio ambiente, y Crecimiento y desarrollo, con una nota de que cada empresa prioriza según su realidad.
 4. **Módulo de Crecimiento:** el "Shark Tank de impacto".
 5. **Por qué OSSA & VEGA:** dos tarjetas, *Impacto estructurado* y *Compromiso con el futuro*.
-6. **Nuestra filosofía empresarial:** "Crecer juntos es crecer mejor." y cuatro compromisos: propósito que trasciende, relaciones que construyen valor, liderazgo con sentido y cultura de impacto.
-7. **Contacto:**
-   - Tarjeta de equipo en tres columnas: fundador, fotografía del equipo y cofundadora.
-   - Tarjetas de Dirección (con ícono de mapa), Horario y Redes sociales (iconos de WhatsApp, Facebook, Instagram, LinkedIn y Linktree).
+6. **Nuestra filosofía empresarial:** "Crecer juntos es crecer mejor." y cuatro compromisos.
+7. **Contacto:** tarjeta de equipo en tres columnas (fundador, fotografía y cofundadora), Dirección con ícono de mapa, Horario y Redes sociales.
 8. **Pie de página:** nombre de la agencia y créditos de desarrollo.
 
 ### Menú y navegación
@@ -69,49 +74,93 @@ El fondo se calcula sobre la **comisión neta recibida por la agencia después d
 
 ### Formulario
 
-1. **Datos de la empresa y la póliza:** empresa asegurada (texto libre, sin sugerencias precargadas), número de póliza o cotización, compañía aseguradora, ramo de seguro y vigencia.
-2. **Parámetros financieros:** prima en pesos colombianos (con separador de miles), % de comisión pactada y % de retefuente, entre 0 y 100, con botones rápidos.
-3. **Asignación al plan de trabajo anual:**
-   - Frente de impacto (Bienestar, Prevención, Sostenibilidad o Crecimiento), con la lista de proyectos sugeridos para ese frente.
-   - Tema de charla, agrupado en personales, organizacionales y sociales y de impacto.
-   - Actividad o destino del fondo (texto libre).
-   - Desplegable con el enfoque de las charlas: estructura de cinco pasos, duración y materiales.
+1. **Datos de la empresa:** empresa asegurada (texto libre).
+2. **Pólizas de la empresa:** cada póliza tiene su propio número o cotización, compañía aseguradora, ramo, vigencia, prima (con separador de miles), % de comisión pactada y % de retefuente (entre 0 y 100, con botones rápidos). Se agregan con **"+ Agregar póliza"** y se quitan con **"Eliminar"**; siempre queda al menos una.
+3. **Asignación al plan de trabajo anual** (una sola para todas las pólizas): frente de impacto (con la lista de proyectos sugeridos), tema de charla y actividad o destino del fondo.
+4. **Enfoque de las charlas:** desplegable con la estructura de cinco pasos, duración y materiales.
 
 Los campos de empresa, póliza y prima empiezan vacíos. El porcentaje de comisión empieza en 15% y el de retefuente en **11%**.
 
 ### Desglose en vivo
 
-El panel de la derecha recalcula al escribir y muestra los cinco pasos, el fondo de impacto, su equivalente sobre la prima y el margen de la agencia.
+El panel de la derecha recalcula al escribir. Muestra los cinco pasos con el total de todas las pólizas, el fondo total, su equivalente sobre la prima total y el fondo de cada póliza.
 
 ### Simulador rápido
 
-Botón **Simulador**: calcula con una prima de prueba, sin alterar el formulario. Tiene valores rápidos de prima y deslizadores de comisión e impuestos. El botón **Ir a registrar póliza** copia los valores al formulario.
+Botón **Simulador**: calcula con una prima de prueba, sin alterar el formulario. Tiene valores rápidos de prima y deslizadores de comisión e impuestos. El botón **Ir a registrar póliza** agrega una póliza nueva con esos valores.
 
 ### Generar reporte
 
-Botón **Generar reporte**: valida los campos obligatorios (empresa, póliza y prima) y abre una vista con el logo, todos los datos, el desglose y el tema de charla. Se puede imprimir o guardar como PDF desde el navegador. Al imprimir solo se imprime el reporte, sin hojas en blanco.
+Botón **Generar reporte**: valida los campos obligatorios y abre una vista con el logo, la empresa, una tabla de pólizas, el desglose total y la asignación. Se puede imprimir o guardar como PDF; al imprimir solo se imprime el reporte.
+
+### Guardar registro
+
+Botón **Guardar registro**: envía la empresa y sus pólizas al servidor, que vuelve a calcular los montos y los guarda a nombre del usuario con sesión iniciada. Si no hay sesión, redirige a `/acceso/`.
 
 ### Otros controles
 
-- **Restablecer:** vacía empresa, póliza, prima, actividad y tema, y devuelve los porcentajes a sus valores iniciales.
+- **Restablecer:** vacía empresa, actividad y tema, y deja una póliza nueva con los porcentajes iniciales.
 - **Tema claro / oscuro:** botón con el símbolo ◐.
+- **Panel:** enlace al panel de registros.
 - **Logo y nombre de la agencia:** llevan a la landing.
 
 ### Pie de página
 
-Cuatro tarjetas: **Contacto** (fundador y cofundadora), **Dirección** (con ícono de mapa), **Horario** y **Redes sociales** (iconos de WhatsApp, Facebook, Instagram, LinkedIn y Linktree). Debajo, una banda delgada a todo el ancho con el crédito de desarrollo y el nombre de la agencia.
+Cuatro tarjetas: **Contacto** (fundador y cofundadora), **Dirección** (con ícono de mapa), **Horario** y **Redes sociales**. Debajo, una banda delgada a todo el ancho con el crédito de desarrollo y el nombre de la agencia.
 
-## Contacto y redes
+## Acceso y roles (`/acceso/` y `/panel/`)
 
-- **Fundador:** Mateo Ossa Vega, WhatsApp 310 548 6395, mateo@ossavega.com.
-- **Cofundadora:** Paula Andrea Arias, WhatsApp 301 685 6861, paula@ossavega.com.
-- **Dirección:** Carrera 84F # 3C-40, Barrio Belén, Medellín, Antioquia, Colombia. El ícono de mapa abre la ubicación en Google Maps.
-- **Horario:** lunes a jueves de 9:00 a.m. a 5:00 p.m.; viernes de 9:00 a.m. a 2:00 p.m.; sábados, domingos y festivos cerrado.
-- **Redes:** Facebook, Instagram, WhatsApp, LinkedIn y Linktree, cada una en una pestaña nueva.
+Hay dos roles:
+
+- **Administrador:** todo lo del asesor, más crear y desactivar usuarios, cambiar contraseñas de otros usuarios, descargar copias de seguridad, restaurar copias y borrar registros.
+- **Asesor:** ve todos los registros, los exporta a Excel, consulta la simulación y genera reportes. No puede gestionar usuarios ni copias.
+
+### Primer ingreso
+
+En `/acceso/`, si todavía no hay usuarios, aparece el formulario **Crear administrador**. Pide el token de configuración (el secreto `SETUP_TOKEN` configurado en Cloudflare), el nombre, el correo y una contraseña de al menos 8 caracteres. Solo funciona mientras no exista ningún usuario.
+
+### Iniciar y cerrar sesión
+
+Con correo y contraseña en `/acceso/`. La sesión dura 12 horas y se guarda en una cookie `HttpOnly`. **Cerrar sesión** está en el panel.
+
+### Panel de registros (`/panel/`)
+
+- **Registros guardados:** tabla con fecha, asesor, empresa, pólizas, frente, prima total y fondo total. El botón **Ver simulación** muestra el desglose de cada póliza y los totales, con el botón **Generar reporte**.
+- **Exportar a Excel (CSV):** descarga un archivo separado por punto y coma, con una fila por póliza. Se abre directamente en Excel.
+- **Cambiar contraseña:** para cualquier usuario.
+- **Usuarios (solo administrador):** crear un asesor o administrador con contraseña inicial, activar o desactivar y cambiar la contraseña de otro usuario. No se puede desactivar ni quitar el rol de administrador a uno mismo.
+- **Copias de seguridad (solo administrador):**
+  - **Descargar copia:** archivo JSON con todos los registros y pólizas. No incluye usuarios ni contraseñas.
+  - **Restaurar desde copia:** reemplaza todos los registros por los de la copia, previa confirmación escribiendo `RESTAURAR`. Los registros se reasignan por correo de asesor; si el correo ya no existe, quedan a nombre del administrador que restaura.
+  - **Borrar todos los registros:** ofrece descargar una copia antes y pide escribir `BORRAR`.
+
+## Base de datos y API
+
+- **Base de datos:** Cloudflare D1 (`ossa-vega-db`), con las tablas `usuarios`, `sesiones`, `registros` y `polizas`. El esquema está en `migrations/0001_init.sql`.
+- **API:** `src/worker.js`, en las rutas `/api/*`. El resto de rutas se sirven como sitio estático.
+- **Contraseñas:** PBKDF2-SHA256 con 100 000 iteraciones y sal aleatoria.
+- **Cálculos:** el servidor recalcula los montos con la misma fórmula antes de guardar.
+
+Rutas principales de la API:
+
+| Método y ruta | Quién | Para qué |
+|---|---|---|
+| `GET /api/estado` | Público | Indica si ya existe un usuario |
+| `POST /api/setup` | Público con token | Crea el primer administrador |
+| `POST /api/login`, `POST /api/logout` | Público / sesión | Inicia y cierra sesión |
+| `GET /api/me` | Sesión | Usuario actual |
+| `POST /api/password` | Sesión | Cambia la contraseña propia |
+| `GET /api/registros` | Sesión | Lista los últimos 500 registros con sus pólizas |
+| `POST /api/registros` | Sesión | Guarda una empresa con sus pólizas |
+| `GET /api/export.csv` | Sesión | Exporta a CSV para Excel |
+| `GET/POST /api/usuarios`, `PATCH /api/usuarios/:id` | Administrador | Gestión de usuarios |
+| `GET /api/admin/backup` | Administrador | Descarga la copia de seguridad |
+| `POST /api/admin/restaurar` | Administrador | Restaura una copia |
+| `POST /api/admin/borrar-registros` | Administrador | Borra todos los registros |
 
 ## Logos e imágenes
 
-- `img/images.jpeg`: logo azul sobre fondo blanco, usado en el encabezado de ambas páginas y en el reporte. El hero de la landing también lo muestra en una tarjeta blanca.
+- `img/images.jpeg`: logo azul sobre fondo blanco, usado en el encabezado de las páginas y en el reporte. El hero de la landing también lo muestra en una tarjeta blanca.
 - `img/790425311_18092511653243610_8166161408051306571_n.jpg`: logo blanco sobre fondo azul, usado como favicon.
 - `img/personas.jpg`: fotografía del equipo.
 - `img/facebook.png`, `img/instagram.png`, `img/whatapp.png`, `img/linkedin.png`, `img/linktree.png`: iconos de redes.
@@ -125,11 +174,9 @@ Cuatro tarjetas: **Contacto** (fundador y cofundadora), **Dirección** (con íco
 
 ## Uso local
 
-El sitio es HTML, CSS y JavaScript estático. No requiere instalación ni compilación.
+El sitio es HTML, CSS y JavaScript estático. La landing y la calculadora funcionan abriéndolas en el navegador. El acceso, el panel y el guardado de registros necesitan la API, así que deben probarse con `wrangler dev` o en el sitio publicado.
 
-Opción 1: abrir `index.html` en el navegador.
-
-Opción 2 (recomendada, para que las rutas se comporten como en producción), desde la carpeta del proyecto:
+Para ver la landing y la calculadora desde la carpeta del proyecto:
 
 ```bash
 python -m http.server 8000
@@ -137,11 +184,30 @@ python -m http.server 8000
 
 Luego abrir http://localhost:8000 (landing) o http://localhost:8000/calculadora/ (calculadora).
 
+## Configuración de Cloudflare
+
+Necesita, en la cuenta de Cloudflare del proyecto:
+
+1. La base D1 `ossa-vega-db` con el esquema aplicado (`migrations/0001_init.sql`).
+2. El secreto `SETUP_TOKEN`, usado una sola vez para crear el primer administrador:
+
+```bash
+npx.cmd wrangler secret put SETUP_TOKEN --name ossa-vegga
+```
+
+En PowerShell use `npx.cmd`, porque `npx` bloquea scripts por la política de ejecución.
+
+Para aplicar el esquema a la base remota, con la cuenta configurada en `CLOUDFLARE_ACCOUNT_ID`:
+
+```bash
+cf d1 migrations apply <id-de-la-base> --dir migrations
+```
+
 ## Despliegue
 
-El repositorio está conectado a **Cloudflare Workers (Static Assets)**. Cada `push` a la rama `main` publica la nueva versión. No hay paso de compilación.
+El repositorio está conectado a **Cloudflare Workers** con archivos estáticos y el Worker de `src/worker.js`. Cada `push` a la rama `main` publica la nueva versión.
 
-El archivo `.assetsignore` evita que se publiquen `docs/`, `documentos/` y los archivos de configuración del repositorio.
+El archivo `.assetsignore` evita que se publiquen `docs/`, `documentos/`, `src/`, `migrations/` y `wrangler.jsonc`.
 
 Flujo de trabajo:
 
