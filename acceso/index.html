@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>OSSA &amp; VEGA — Acceso</title>
+  <link rel="icon" type="image/jpeg" href="../img/790425311_18092511653243610_8166161408051306571_n.jpg">
+  <style>
+    :root { --brand: #0b6fc4; --brand-oscuro: #0a4f8a; --texto: #1d2733; --muted: #6b7785; --borde: #dce7f3; --danger: #c0392b; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: "Segoe UI", system-ui, sans-serif; color: var(--texto);
+      background: linear-gradient(135deg, #0b6fc4 0%, #0a4f8a 100%); display: grid; place-items: center; padding: 24px; }
+    .caja { width: min(420px, 100%); background: #fff; border-radius: 18px; padding: 28px; box-shadow: 0 24px 60px rgba(0,0,0,.3); }
+    .logo { width: 72px; height: 72px; border-radius: 14px; object-fit: cover; display: block; margin: 0 auto 12px; }
+    h1 { font-size: 20px; margin: 0 0 4px; text-align: center; color: var(--brand-oscuro); }
+    .sub { font-size: 13px; color: var(--muted); text-align: center; margin: 0 0 20px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+    input { width: 100%; font: inherit; font-size: 14px; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 10px; }
+    input:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
+    button { width: 100%; margin-top: 18px; font: inherit; font-weight: 600; font-size: 15px; padding: 11px; border: none; border-radius: 10px; background: var(--brand); color: #fff; cursor: pointer; }
+    button:hover { background: var(--brand-oscuro); }
+    button:disabled { opacity: .6; cursor: wait; }
+    .msg { margin-top: 12px; font-size: 13px; min-height: 18px; color: var(--danger); text-align: center; }
+    .msg.ok { color: #0a7a4a; }
+    .oculto { display: none; }
+    .volver { display: block; text-align: center; margin-top: 16px; font-size: 13px; color: var(--brand); }
+  </style>
+</head>
+<body>
+  <main class="caja">
+    <img class="logo" src="../img/images.jpeg" alt="Logo OSSA &amp; VEGA">
+
+    <section id="login">
+      <h1>Iniciar sesión</h1>
+      <p class="sub">Panel de registros del Fondo de Impacto</p>
+      <form id="form-login">
+        <label for="l-email">Correo</label>
+        <input id="l-email" type="email" autocomplete="username" required>
+        <label for="l-pass">Contraseña</label>
+        <input id="l-pass" type="password" autocomplete="current-password" required>
+        <button type="submit" id="btn-login">Entrar</button>
+      </form>
+      <div class="msg" id="msg-login"></div>
+    </section>
+
+    <section id="setup" class="oculto">
+      <h1>Crear administrador</h1>
+      <p class="sub">Primer ingreso. Lo necesita solo una vez.</p>
+      <form id="form-setup">
+        <label for="s-token">Token de configuración</label>
+        <input id="s-token" type="password" autocomplete="off" required>
+        <label for="s-nombre">Nombre</label>
+        <input id="s-nombre" type="text" required>
+        <label for="s-email">Correo</label>
+        <input id="s-email" type="email" autocomplete="username" required>
+        <label for="s-pass">Contraseña (mínimo 8 caracteres)</label>
+        <input id="s-pass" type="password" autocomplete="new-password" minlength="8" required>
+        <button type="submit" id="btn-setup">Crear administrador</button>
+      </form>
+      <div class="msg" id="msg-setup"></div>
+    </section>
+
+    <a class="volver" href="../calculadora/">← Volver a la calculadora</a>
+  </main>
+
+<script>
+(function () {
+  function mostrar(id, msg, ok) {
+    var el = document.getElementById(id);
+    el.textContent = msg || '';
+    el.classList.toggle('ok', !!ok);
+  }
+
+  async function api(url, opts) {
+    var r = await fetch(url, Object.assign({ credentials: 'same-origin', headers: { 'content-type': 'application/json' } }, opts || {}));
+    var data = await r.json().catch(function () { return {}; });
+    return { ok: r.ok, status: r.status, data: data };
+  }
+
+  // Si ya hay sesión, ir al panel
+  api('/api/me').then(function (r) { if (r.ok) location.replace('../panel/'); });
+
+  api('/api/estado').then(function (r) {
+    if (r.ok && r.data.hayUsuarios === false) {
+      document.getElementById('login').classList.add('oculto');
+      document.getElementById('setup').classList.remove('oculto');
+    }
+  });
+
+  document.getElementById('form-login').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('btn-login');
+    btn.disabled = true; mostrar('msg-login', '');
+    var r = await api('/api/login', { method: 'POST', body: JSON.stringify({
+      email: document.getElementById('l-email').value,
+      password: document.getElementById('l-pass').value
+    }) });
+    btn.disabled = false;
+    if (r.ok) { location.replace('../panel/'); return; }
+    mostrar('msg-login', r.data.error || 'No fue posible iniciar sesión.');
+  });
+
+  document.getElementById('form-setup').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('btn-setup');
+    btn.disabled = true; mostrar('msg-setup', '');
+    var r = await api('/api/setup', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-setup-token': document.getElementById('s-token').value },
+      body: JSON.stringify({
+        nombre: document.getElementById('s-nombre').value,
+        email: document.getElementById('s-email').value,
+        password: document.getElementById('s-pass').value
+      })
+    });
+    btn.disabled = false;
+    if (r.ok) {
+      mostrar('msg-setup', 'Administrador creado. Ahora inicie sesión.', true);
+      setTimeout(function () { location.reload(); }, 1200);
+      return;
+    }
+    mostrar('msg-setup', r.data.error || 'No fue posible crear el administrador.');
+  });
+})();
+</script>
+</body>
+</html>

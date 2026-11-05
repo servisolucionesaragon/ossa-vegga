@@ -6,3 +6,8 @@ README.md
 .gitignore
 .assetsignore
 .git
+
+# Código del Worker y configuración (no se publican como archivos estáticos)
+src
+migrations
+wrangler.jsonc

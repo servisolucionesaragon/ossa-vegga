@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>OSSA &amp; VEGA — Panel de registros</title>
+  <link rel="icon" type="image/jpeg" href="../img/790425311_18092511653243610_8166161408051306571_n.jpg">
+  <style>
+    :root { --brand: #0b6fc4; --brand-oscuro: #0a4f8a; --texto: #1d2733; --muted: #6b7785; --borde: #e3e8ee; --fondo: #f4f6f8; --danger: #c0392b; --ok: #0a7a4a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; color: var(--texto); background: var(--fondo); }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+      background: #fff; border-bottom: 1px solid var(--borde); padding: 12px 24px; position: sticky; top: 0; z-index: 5; }
+    .marca { display: flex; align-items: center; gap: 12px; }
+    .marca img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
+    .marca strong { display: block; font-size: 16px; }
+    .marca small { color: var(--muted); font-size: 12px; }
+    .acciones { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn { font: inherit; font-size: 13px; cursor: pointer; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--borde);
+      background: #fff; color: var(--texto); text-decoration: none; display: inline-block; }
+    .btn:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primario { background: var(--brand); color: #fff; border-color: var(--brand); font-weight: 600; }
+    .btn-primario:hover { background: var(--brand-oscuro); color: #fff; }
+    .btn-peligro { color: var(--danger); border-color: var(--danger); }
+    main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .card { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+    .card h2 { font-size: 16px; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 12px; }
+    td.num { text-align: right; font-family: Consolas, monospace; white-space: nowrap; }
+    .polizas { margin: 0; padding: 0; list-style: none; font-size: 12px; color: var(--muted); }
+    .polizas li { padding: 2px 0; }
+    .vacio { color: var(--muted); font-size: 14px; padding: 12px 0; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: end; }
+    .form-grid label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    input, select { width: 100%; font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 8px; }
+    .msg { font-size: 13px; color: var(--danger); min-height: 18px; margin-top: 8px; }
+    .msg.ok { color: var(--ok); }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #e4f0fb; color: var(--brand-oscuro); font-weight: 600; }
+    .badge.off { background: #fde8ec; color: var(--danger); }
+    .oculto { display: none !important; }
+    @media (max-width: 760px) { th, td { font-size: 12px; } }
+  </style>
+</head>
+<body>
+<header>
+  <a class="marca" href="../index.html" style="text-decoration:none;color:inherit">
+    <img src="../img/images.jpeg" alt="Logo OSSA &amp; VEGA">
+    <span><strong>Panel de registros</strong><small id="usuario-info">Cargando…</small></span>
+  </a>
+  <div class="acciones">
+    <a class="btn" href="../calculadora/">Calculadora</a>
+    <button class="btn" id="btn-clave" type="button">Cambiar contraseña</button>
+    <button class="btn btn-primario" id="btn-csv" type="button">Exportar a Excel (CSV)</button>
+    <button class="btn" id="btn-salir" type="button">Cerrar sesión</button>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Registros guardados <span class="msg" id="msg-registros"></span></h2>
+    <div id="tabla-registros"></div>
+  </section>
+
+  <section class="card oculto" id="bloque-usuarios">
+    <h2>Usuarios</h2>
+    <form class="form-grid" id="form-nuevo">
+      <div><label for="n-nombre">Nombre</label><input id="n-nombre" required></div>
+      <div><label for="n-email">Correo</label><input id="n-email" type="email" required></div>
+      <div><label for="n-pass">Contraseña inicial (mín. 8)</label><input id="n-pass" type="password" minlength="8" required></div>
+      <div><label for="n-rol">Rol</label>
+        <select id="n-rol"><option value="asesor">Asesor</option><option value="admin">Administrador</option></select></div>
+      <div><button class="btn btn-primario" type="submit">Crear usuario</button></div>
+    </form>
+    <div class="msg" id="msg-usuarios"></div>
+    <div id="tabla-usuarios" style="margin-top:12px"></div>
+  </section>
+</main>
+
+<dialog id="dlg-clave" style="border:1px solid var(--borde);border-radius:14px;padding:20px;width:min(380px,92vw)">
+  <form id="form-clave" method="dialog">
+    <h2 style="font-size:16px;margin:0 0 12px">Cambiar contraseña</h2>
+    <div class="form-grid" style="grid-template-columns:1fr">
+      <div><label for="c-actual">Contraseña actual</label><input id="c-actual" type="password" required></div>
+      <div><label for="c-nueva">Nueva contraseña (mín. 8)</label><input id="c-nueva" type="password" minlength="8" required></div>
+    </div>
+    <div class="msg" id="msg-clave"></div>
+    <div class="acciones" style="justify-content:flex-end;margin-top:12px">
+      <button class="btn" type="button" id="c-cancelar">Cancelar</button>
+      <button class="btn btn-primario" type="submit">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function () {
+  var yo = null;
+  var registros = [];
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function cop(n) { return '$ ' + Number(n || 0).toLocaleString('es-CO'); }
+  function fechaCorta(s) { return String(s || '').slice(0, 16).replace('T', ' '); }
+
+  async function api(url, opts) {
+    var r = await fetch(url, Object.assign({ credentials: 'same-origin', headers: { 'content-type': 'application/json' } }, opts || {}));
+    var data = await r.json().catch(function () { return {}; });
+    return { ok: r.ok, status: r.status, data: data };
+  }
+
+  function mensaje(id, texto, ok) {
+    var el = document.getElementById(id);
+    el.textContent = texto || '';
+    el.classList.toggle('ok', !!ok);
+  }
+
+  function pintarRegistros() {
+    var cont = document.getElementById('tabla-registros');
+    if (!registros.length) { cont.innerHTML = '<p class="vacio">Aún no hay registros guardados.</p>'; return; }
+    var filas = registros.map(function (r) {
+      var polizas = (r.polizas || []).map(function (p) {
+        return '<li>' + esc(p.numero) + ' · ' + esc(p.compania) + ' · ' + esc(p.ramo) + ' · fondo ' + cop(p.fondo) + '</li>';
+      }).join('');
+      return '<tr><td>' + r.id + '</td><td>' + esc(fechaCorta(r.creado)) + '</td><td>' + esc(r.asesor) +
+        '</td><td><strong>' + esc(r.empresa) + '</strong><ul class="polizas">' + polizas + '</ul></td>' +
+        '<td>' + esc(r.eje) + '<br><span class="polizas">' + esc(r.tema) + '</span></td>' +
+        '<td class="num">' + (r.polizas || []).length + '</td>' +
+        '<td class="num">' + cop(r.prima_total) + '</td><td class="num">' + cop(r.fondo_total) + '</td></tr>';
+    }).join('');
+    cont.innerHTML = '<div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Fecha</th><th>Asesor</th><th>Empresa y pólizas</th>' +
+      '<th>Frente y tema</th><th>Pólizas</th><th>Prima total</th><th>Fondo total</th></tr></thead><tbody>' + filas + '</tbody></table></div>';
+  }
+
+  async function cargarRegistros() {
+    var r = await api('/api/registros');
+    if (!r.ok) { mensaje('msg-registros', r.data.error || 'No se pudieron cargar los registros.'); return; }
+    registros = r.data.registros;
+    pintarRegistros();
+  }
+
+  async function cargarUsuarios() {
+    var r = await api('/api/usuarios');
+    if (!r.ok) return;
+    var filas = r.data.usuarios.map(function (u) {
+      var activo = !!u.activo;
+      return '<tr><td>' + esc(u.nombre) + '</td><td>' + esc(u.email) + '</td><td>' + esc(u.rol) +
+        '</td><td><span class="badge ' + (activo ? '' : 'off') + '">' + (activo ? 'Activo' : 'Desactivado') + '</span></td>' +
+        '<td><button class="btn" data-accion="activo" data-id="' + u.id + '" data-valor="' + (activo ? '0' : '1') + '">' +
+        (activo ? 'Desactivar' : 'Activar') + '</button> <button class="btn" data-accion="clave" data-id="' + u.id + '">Nueva contraseña</button></td></tr>';
+    }).join('');
+    document.getElementById('tabla-usuarios').innerHTML =
+      '<div style="overflow-x:auto"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>' + filas + '</tbody></table></div>';
+  }
+
+  async function iniciar() {
+    var r = await api('/api/me');
+    if (!r.ok) { location.replace('../acceso/'); return; }
+    yo = r.data.usuario;
+    document.getElementById('usuario-info').textContent = yo.nombre + ' · ' + (yo.rol === 'admin' ? 'Administrador' : 'Asesor');
+    if (yo.rol === 'admin') {
+      document.getElementById('bloque-usuarios').classList.remove('oculto');
+      cargarUsuarios();
+    }
+    cargarRegistros();
+  }
+
+  // Exportar CSV (abre en Excel)
+  document.getElementById('btn-csv').addEventListener('click', async function () {
+    var r = await fetch('/api/export.csv', { credentials: 'same-origin' });
+    if (!r.ok) { mensaje('msg-registros', 'No se pudo exportar.'); return; }
+    var blob = await r.blob();
+    var a = document.createElement('a');
+    var nombre = (r.headers.get('content-disposition') || '').match(/filename="([^"]+)"/);
+    a.href = URL.createObjectURL(blob);
+    a.download = nombre ? nombre[1] : 'registros-ossa-vega.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+
+  document.getElementById('btn-salir').addEventListener('click', async function () {
+    await api('/api/logout', { method: 'POST' });
+    location.replace('../acceso/');
+  });
+
+  // Crear usuario (admin)
+  document.getElementById('form-nuevo').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var r = await api('/api/usuarios', { method: 'POST', body: JSON.stringify({
+      nombre: document.getElementById('n-nombre').value,
+      email: document.getElementById('n-email').value,
+      password: document.getElementById('n-pass').value,
+      rol: document.getElementById('n-rol').value
+    }) });
+    if (r.ok) {
+      mensaje('msg-usuarios', 'Usuario creado.', true);
+      e.target.reset();
+      cargarUsuarios();
+    } else {
+      mensaje('msg-usuarios', r.data.error || 'No se pudo crear el usuario.');
+    }
+  });
+
+  // Activar / desactivar y nueva contraseña (admin)
+  document.getElementById('tabla-usuarios').addEventListener('click', async function (e) {
+    var b = e.target.closest('button[data-accion]');
+    if (!b) return;
+    var id = b.getAttribute('data-id');
+    if (b.getAttribute('data-accion') === 'activo') {
+      var r = await api('/api/usuarios/' + id, { method: 'PATCH', body: JSON.stringify({ activo: b.getAttribute('data-valor') === '1' }) });
+      mensaje('msg-usuarios', r.ok ? 'Estado actualizado.' : (r.data.error || 'No se pudo actualizar.'), r.ok);
+      cargarUsuarios();
+    } else {
+      var nueva = prompt('Nueva contraseña (mínimo 8 caracteres):');
+      if (!nueva) return;
+      var r2 = await api('/api/usuarios/' + id, { method: 'PATCH', body: JSON.stringify({ password: nueva }) });
+      mensaje('msg-usuarios', r2.ok ? 'Contraseña actualizada.' : (r2.data.error || 'No se pudo actualizar.'), r2.ok);
+    }
+  });
+
+  // Cambiar mi contraseña
+  var dlg = document.getElementById('dlg-clave');
+  document.getElementById('btn-clave').addEventListener('click', function () {
+    mensaje('msg-clave', ''); document.getElementById('form-clave').reset(); dlg.showModal();
+  });
+  document.getElementById('c-cancelar').addEventListener('click', function () { dlg.close(); });
+  document.getElementById('form-clave').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var r = await api('/api/password', { method: 'POST', body: JSON.stringify({
+      actual: document.getElementById('c-actual').value,
+      nueva: document.getElementById('c-nueva').value
+    }) });
+    if (r.ok) { dlg.close(); mensaje('msg-registros', 'Contraseña cambiada.', true); }
+    else { mensaje('msg-clave', r.data.error || 'No se pudo cambiar.'); }
+  });
+
+  iniciar();
+})();
+</script>
+</body>
+</html>

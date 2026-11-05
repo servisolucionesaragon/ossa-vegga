@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ossa-vegga",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-01-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ossa-vega-db",
+      "database_id": "28d3a230-00e8-4a09-b817-8ba8f9722edf",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

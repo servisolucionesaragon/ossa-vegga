@@ -332,7 +332,9 @@
     </div>
   </a>
   <div class="actions">
+    <a class="btn" href="../panel/">Panel</a>
     <button class="btn" id="btn-simulador" type="button">Simulador</button>
+    <button class="btn btn-primary" id="btn-guardar" type="button">Guardar registro</button>
     <button class="btn btn-primary" id="btn-reporte" type="button">Generar reporte</button>
     <button class="btn" id="btn-reset" type="button" title="Restablecer valores">Restablecer</button>
     <button class="btn btn-icon" id="btn-theme" type="button" title="Cambiar tema">◐</button>
@@ -825,6 +827,49 @@
     polizasEl.innerHTML = '';
     agregarPoliza();
     recalcular();
+  });
+
+  // ---------- Guardar registro (requiere sesión) ----------
+  $('btn-guardar').addEventListener('click', async function () {
+    var btn = this;
+    if (!validarTodo(true)) {
+      var primero = document.querySelector('.invalid');
+      if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    var body = {
+      empresa: $('empresa').value.trim(),
+      eje: $('eje').value,
+      tema: $('tema').value,
+      actividad: $('actividad').value.trim(),
+      polizas: []
+    };
+    polizasEl.querySelectorAll('.poliza-item').forEach(function (it) {
+      var d = leerPoliza(it);
+      body.polizas.push({
+        numero: d.numero, compania: d.compania, ramo: d.ramo, vigIni: d.vigIni, vigFin: d.vigFin,
+        prima: d.prima, comisionPct: d.comisionPct, retencionPct: d.retencionPct
+      });
+    });
+    btn.disabled = true;
+    try {
+      var sesion = await fetch('/api/me', { credentials: 'same-origin' });
+      if (sesion.status === 401) {
+        alert('Inicie sesión para guardar el registro.');
+        location.href = '../acceso/';
+        return;
+      }
+      var r = await fetch('/api/registros', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' }, body: JSON.stringify(body)
+      });
+      var data = await r.json().catch(function () { return {}; });
+      alert(r.ok ? 'Registro guardado (N.º ' + data.id + ').' : (data.error || 'No se pudo guardar el registro.'));
+    } catch (err) {
+      alert('No hay conexión con el servidor. Intente de nuevo.');
+    } finally {
+      btn.disabled = false;
+    }
   });
 
   // ---------- Tema ----------
