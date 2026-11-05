@@ -294,6 +294,30 @@
       #reporte { padding: 0 !important; border-radius: 0 !important; }
       #reporte .rep-head, #reporte table, #reporte .rep-note { break-inside: avoid; }
     }
+    /* Varias pólizas por empresa */
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .card-head h2 { margin: 0; }
+    .lead-small { font-size: 13px; color: var(--muted); margin: 0 0 16px; line-height: 1.5; }
+    .card-inner {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px;
+    }
+    .poliza-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .pol-titulo { font-size: 14px; color: var(--brand); }
+    .btn-quitar {
+      font: inherit; font-size: 12px; cursor: pointer; background: none; border: 1px solid var(--danger);
+      color: var(--danger); border-radius: 8px; padding: 4px 10px;
+    }
+    .btn-quitar:disabled { opacity: .35; cursor: not-allowed; }
+    .row.small { padding: 8px 12px; margin-bottom: 6px; }
+    .row.small .lbl { font-size: 12px; }
+    .row.small .val { font-size: 13px; }
+    .por-poliza-titulo {
+      font-size: 12px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: .4px; margin: 14px 0 8px;
+    }
+    #reporte table.tabla-pol th, #reporte table.tabla-pol td { width: auto; font-size: 11px; padding: 6px 5px; }
+    #reporte table.tabla-pol tr.cab td { font-family: inherit; font-weight: 700; color: #0a4f8a; background: #e4f0fb; }
+    #reporte table.tabla-pol td.num { text-align: right; white-space: nowrap; }
+    input.invalid, select.invalid { border-color: var(--danger); }
   </style>
 </head>
 <body>
@@ -317,103 +341,24 @@
 <main>
   <section>
     <div class="card">
-      <h2><span class="num">1</span> Datos de la Empresa y Póliza</h2>
+      <h2><span class="num">1</span> Datos de la empresa</h2>
       <div class="field">
         <label for="empresa">Empresa asegurada</label>
         <input id="empresa" type="text" list="empresas-lista" placeholder="Escriba el nombre de la empresa" autocomplete="off">
         <datalist id="empresas-lista"></datalist>
         <div class="error" id="err-empresa"></div>
       </div>
-      <div class="grid-2">
-        <div class="field">
-          <label for="poliza">Número de póliza o cotización</label>
-          <input id="poliza" type="text" placeholder="Ej.: POL-2026-ARL-7009" autocomplete="off">
-          <div class="error" id="err-poliza"></div>
-        </div>
-        <div class="field">
-          <label for="compania">Compañía aseguradora</label>
-          <select id="compania"></select>
-        </div>
-      </div>
-      <div class="grid-2">
-        <div class="field">
-          <label for="ramo">Ramo de seguro</label>
-          <select id="ramo"></select>
-        </div>
-        <div class="field">
-          <label>Periodo / vigencia</label>
-          <div class="grid-2" style="gap:8px">
-            <input id="vig-inicio" type="number" min="2000" max="2100" value="2026" aria-label="Año de inicio">
-            <input id="vig-fin" type="text" value="2026 - 2027" aria-label="Vigencia completa">
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="card">
-      <h2><span class="num">2</span> Parámetros Financieros de Liquidación</h2>
-      <div class="field">
-        <label for="prima">Prima comercial del seguro ($ COP) <span class="hint" id="prima-hint"></span></label>
-        <div class="input-prefix">
-          <span>$</span>
-          <input id="prima" type="text" inputmode="numeric" placeholder="Ej.: 95.000.000" autocomplete="off">
-        </div>
-        <div class="error" id="err-prima"></div>
+      <div class="card-head">
+        <h2><span class="num">2</span> Pólizas de la empresa</h2>
+        <button class="btn btn-primary" id="btn-agregar" type="button">+ Agregar póliza</button>
       </div>
-      <div class="grid-2">
-        <div class="field">
-          <label for="comision">% Comisión pactada agencia</label>
-          <div class="input-suffix">
-            <input id="comision" type="number" min="0" max="100" step="0.5">
-            <span>%</span>
-          </div>
-          <div class="chips" data-target="comision">
-            <button class="chip" type="button" data-v="10">10%</button>
-            <button class="chip" type="button" data-v="12.5">12.5%</button>
-            <button class="chip" type="button" data-v="15">15%</button>
-            <button class="chip" type="button" data-v="18">18%</button>
-            <button class="chip" type="button" data-v="20">20%</button>
-          </div>
-          <div class="error" id="err-comision"></div>
-        </div>
-        <div class="field">
-          <label for="retencion">% Deducción de impuestos (retefuente)</label>
-          <div class="input-suffix">
-            <input id="retencion" type="number" min="0" max="100" step="0.5">
-            <span>%</span>
-          </div>
-          <div class="chips" data-target="retencion">
-            <button class="chip" type="button" data-v="11">11% (estándar)</button>
-            <button class="chip" type="button" data-v="10">10%</button>
-            <button class="chip" type="button" data-v="0">0% (exento)</button>
-          </div>
-          <div class="error" id="err-retencion"></div>
-        </div>
-      </div>
-    </div>
+      <p class="lead-small">Una empresa puede tener varias pólizas de distintas aseguradoras y ramos. Registre cada una por separado; el fondo se suma en el desglose.</p>
 
-    <div class="card">
-      <h2><span class="num">3</span> Asignación al Plan de Trabajo Anual</h2>
-      <div class="grid-2">
-        <div class="field">
-          <label for="eje">Frente de impacto</label>
-          <select id="eje">
-            <option>Bienestar</option>
-            <option>Prevención</option>
-            <option>Sostenibilidad</option>
-            <option>Crecimiento</option>
-          </select>
-          <div class="frente-hint" id="frente-hint"></div>
-        </div>
-        <div class="field">
-          <label for="tema">Tema de charla</label>
-          <select id="tema"></select>
-        </div>
-      </div>
-      <div class="field">
-        <label for="actividad">Actividad / destino del fondo</label>
-        <input id="actividad" type="text" placeholder="Ej.: Charla de manejo del estrés para el área de producción" autocomplete="off">
-      </div>
+      <div id="polizas"></div>
+
       <details class="charla-info">
         <summary>Enfoque de las charlas: estructura y requisitos</summary>
         <p><strong>Experiencias memorables con sentido humano y vital.</strong> Buscan que el colaborador se reconozca como ser humano integral y que lo aprendido trascienda su vida personal.</p>
@@ -446,19 +391,19 @@
 
     <div id="desglose-contenido">
       <div class="row">
-        <div><div class="lbl">Paso 1: Prima comercial</div><div class="sub">Valor facturado</div></div>
+        <div><div class="lbl">Paso 1: Prima comercial total</div><div class="sub"><span id="d-npolizas">0 pólizas</span></div></div>
         <div class="val" id="d-prima">$ 0</div>
       </div>
       <div class="row">
-        <div><div class="lbl">Paso 2: Comisión bruta (<span id="d-comision-pct">0</span>%)</div><div class="sub">Prima × <span id="d-comision-pct2">0</span>%</div></div>
+        <div><div class="lbl">Paso 2: Comisión bruta total</div><div class="sub">Σ prima × % comisión</div></div>
         <div class="val" id="d-comision">$ 0</div>
       </div>
       <div class="row neg">
-        <div><div class="lbl">Paso 3: Retenciones / impuestos (<span id="d-ret-pct">0</span>%)</div><div class="sub">Comisión × <span id="d-ret-pct2">0</span>%</div></div>
+        <div><div class="lbl">Paso 3: Retenciones / impuestos total</div><div class="sub">Σ comisión × % retefuente</div></div>
         <div class="val" id="d-ret">- $ 0</div>
       </div>
       <div class="row net">
-        <div><div class="lbl">Paso 4: Comisión neta agencia</div><div class="sub">Comisión bruta − impuestos</div></div>
+        <div><div class="lbl">Paso 4: Comisión neta agencia total</div><div class="sub">Comisión bruta − impuestos</div></div>
         <div class="val" id="d-neta">$ 0</div>
       </div>
 
@@ -469,8 +414,11 @@
         </div>
         <div class="amount" id="d-fondo">$ 0</div>
         <div class="desc">Monto disponible para financiar el Plan de Trabajo Anual de la empresa seleccionada.</div>
-        <div class="eq"><span>Equivalente sobre prima:</span><b id="d-eq">0%</b></div>
+        <div class="eq"><span>Equivalente sobre prima total:</span><b id="d-eq">0%</b></div>
       </div>
+
+      <div class="por-poliza-titulo">Fondo por póliza</div>
+      <div id="d-polizas"></div>
     </div>
   </aside>
 </main>
@@ -603,118 +551,268 @@
     'Riesgos Laborales (ARL)', 'Vida Grupo', 'Salud Colectiva', 'Todo Riesgo Daño Material',
     'Responsabilidad Civil', 'Autos y Flotas', 'Cumplimiento y Garantías', 'Transporte de Mercancías'
   ];
+  var FRENTES = ['Bienestar', 'Prevención', 'Sostenibilidad', 'Crecimiento'];
   var PRIMAS_RAPIDAS = [30000000, 50000000, 100000000, 150000000, 250000000];
+  var DEFAULTS = { comision: 15, retencion: 11 };
+
+  var TEMAS = [
+    { grupo: 'Personales', items: ['Manejo del estrés y las emociones', 'Comunicación consciente', 'Proyecto de vida', 'Liderazgo personal', 'Autocuidado y bienestar integral'] },
+    { grupo: 'Organizacionales', items: ['Cultura organizacional', 'Trabajo en equipo', 'Liderazgo consciente', 'Servicio al cliente', 'Gestión del cambio', 'Seguridad y salud en el trabajo (SST)'] },
+    { grupo: 'Sociales y de impacto', items: ['Convivencia y respeto', 'Sostenibilidad y cuidado del entorno', 'Relación con otros seres vivos', 'Responsabilidad social', 'Ética y valores'] }
+  ];
+  var FRENTES_PROYECTOS = {
+    'Bienestar': 'Salud mental · prevención del riesgo psicosocial · formación · clima organizacional · cumplimiento normativo · plan de trabajo ARL · fortalecimiento de pequeños negocios · mentoría y conexión con aliados · educación inclusiva y desarrollo comunitario.',
+    'Prevención': 'Seguridad y gestión de riesgos.',
+    'Sostenibilidad': 'Economía circular y reciclaje · uso responsable del agua y otros recursos · huertas en hogar y empresa · prácticas ESG · reducción de huella ambiental.',
+    'Crecimiento': 'Módulo de Crecimiento Empresarial ("Shark Tank de impacto"): nuevas ideas de negocio, emprendimientos locales o de colaboradores, y pequeñas empresas con alto potencial.'
+  };
 
   function $(id) { return document.getElementById(id); }
   function cop(n) { return '$ ' + nf.format(n); }
   function copNeg(n) { return '- $ ' + nf.format(n); }
   function parsePesos(s) { var d = String(s).replace(/\D/g, ''); return d === '' ? 0 : Number(d); }
   function formatPesos(n) { return n ? nf.format(n) : ''; }
-  function llenar(sel, items) {
-    sel.innerHTML = '';
-    items.forEach(function (t) {
-      var o = document.createElement('option');
-      o.textContent = t; o.value = t; sel.appendChild(o);
+  function pctValido(v) { return !isNaN(v) && v >= 0 && v <= 100; }
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function opciones(lista) {
+    return lista.map(function (t) { return '<option>' + esc(t) + '</option>'; }).join('');
+  }
+  function opcionesTemas() {
+    var h = '<option value="">— Seleccione un tema —</option>';
+    TEMAS.forEach(function (g) {
+      h += '<optgroup label="' + esc(g.grupo) + '">' + g.items.map(function (t) {
+        return '<option>' + esc(t) + '</option>';
+      }).join('') + '</optgroup>';
     });
+    return h;
   }
 
-  // ---------- Inicialización de listas ----------
+  // ---------- Listas fijas ----------
   EMPRESAS.forEach(function (t) {
     var o = document.createElement('option');
     o.value = t;
     $('empresas-lista').appendChild(o);
   });
-  llenar($('compania'), COMPANIAS);
-  llenar($('ramo'), RAMOS);
-  $('compania').value = 'Suramericana de Seguros (Sura)';
-  $('ramo').value = 'Riesgos Laborales (ARL)';
 
-  var DEFAULTS = { prima: 95000000, comision: 15, retencion: 11 };
+  // ---------- Pólizas (cada una es un bloque independiente) ----------
+  var polizasEl = $('polizas');
 
-  function setPrima(n) { $('prima').value = formatPesos(n); }
+  function plantilla() {
+    return '' +
+      '<div class="poliza-item card-inner">' +
+      '  <div class="poliza-head"><strong class="pol-titulo">Póliza</strong>' +
+      '    <button type="button" class="btn-quitar">Eliminar</button></div>' +
+      '  <div class="grid-2">' +
+      '    <div class="field"><label>Número de póliza o cotización</label>' +
+      '      <input class="f-poliza" type="text" placeholder="Ej.: POL-2026-ARL-7009" autocomplete="off">' +
+      '      <div class="error err-poliza"></div></div>' +
+      '    <div class="field"><label>Compañía aseguradora</label>' +
+      '      <select class="f-compania">' + opciones(COMPANIAS) + '</select></div>' +
+      '  </div>' +
+      '  <div class="grid-2">' +
+      '    <div class="field"><label>Ramo de seguro</label>' +
+      '      <select class="f-ramo">' + opciones(RAMOS) + '</select></div>' +
+      '    <div class="field"><label>Periodo / vigencia</label>' +
+      '      <div class="grid-2" style="gap:8px">' +
+      '        <input class="f-vig-ini" type="number" min="2000" max="2100" value="2026" aria-label="Año de inicio">' +
+      '        <input class="f-vig-fin" type="text" value="2026 - 2027" aria-label="Vigencia completa">' +
+      '      </div></div>' +
+      '  </div>' +
+      '  <div class="field"><label>Prima comercial del seguro ($ COP)</label>' +
+      '    <div class="input-prefix"><span>$</span>' +
+      '      <input class="f-prima" type="text" inputmode="numeric" placeholder="Ej.: 95.000.000" autocomplete="off"></div>' +
+      '    <div class="error err-prima"></div></div>' +
+      '  <div class="grid-2">' +
+      '    <div class="field"><label>% Comisión pactada agencia</label>' +
+      '      <div class="input-suffix"><input class="f-comision" type="number" min="0" max="100" step="0.5"><span>%</span></div>' +
+      '      <div class="chips" data-target="comision">' +
+      '        <button class="chip" type="button" data-v="10">10%</button>' +
+      '        <button class="chip" type="button" data-v="12.5">12.5%</button>' +
+      '        <button class="chip" type="button" data-v="15">15%</button>' +
+      '        <button class="chip" type="button" data-v="18">18%</button>' +
+      '        <button class="chip" type="button" data-v="20">20%</button>' +
+      '      </div>' +
+      '      <div class="error err-comision"></div></div>' +
+      '    <div class="field"><label>% Deducción de impuestos (retefuente)</label>' +
+      '      <div class="input-suffix"><input class="f-retencion" type="number" min="0" max="100" step="0.5"><span>%</span></div>' +
+      '      <div class="chips" data-target="retencion">' +
+      '        <button class="chip" type="button" data-v="11">11% (estándar)</button>' +
+      '        <button class="chip" type="button" data-v="10">10%</button>' +
+      '        <button class="chip" type="button" data-v="0">0% (exento)</button>' +
+      '      </div>' +
+      '      <div class="error err-retencion"></div></div>' +
+      '  </div>' +
+      '  <div class="grid-2">' +
+      '    <div class="field"><label>Frente de impacto</label>' +
+      '      <select class="f-eje">' + opciones(FRENTES) + '</select>' +
+      '      <div class="frente-hint"></div></div>' +
+      '    <div class="field"><label>Tema de charla</label>' +
+      '      <select class="f-tema">' + opcionesTemas() + '</select></div>' +
+      '  </div>' +
+      '  <div class="field"><label>Actividad / destino del fondo</label>' +
+      '    <input class="f-actividad" type="text" placeholder="Ej.: Charla de manejo del estrés para el área de producción" autocomplete="off"></div>' +
+      '</div>';
+  }
 
-  // ---------- Cálculo principal ----------
-  function leerForm() {
+  function actualizarHint(item) {
+    var eje = item.querySelector('.f-eje').value;
+    item.querySelector('.frente-hint').textContent = 'Proyectos del frente: ' + FRENTES_PROYECTOS[eje];
+  }
+
+  function renumerar() {
+    var items = polizasEl.querySelectorAll('.poliza-item');
+    items.forEach(function (it, i) {
+      it.querySelector('.pol-titulo').textContent = 'Póliza ' + (i + 1);
+      it.querySelector('.btn-quitar').disabled = items.length === 1;
+    });
+  }
+
+  function agregarPoliza(valores) {
+    var wrap = document.createElement('div');
+    wrap.innerHTML = plantilla();
+    var item = wrap.firstElementChild;
+    polizasEl.appendChild(item);
+    if (valores) {
+      if (valores.prima) item.querySelector('.f-prima').value = formatPesos(valores.prima);
+      item.querySelector('.f-comision').value = valores.comisionPct;
+      item.querySelector('.f-retencion').value = valores.retencionPct;
+    } else {
+      item.querySelector('.f-comision').value = DEFAULTS.comision;
+      item.querySelector('.f-retencion').value = DEFAULTS.retencion;
+    }
+    actualizarHint(item);
+    renumerar();
+    return item;
+  }
+
+  function leerPoliza(item) {
     return {
-      prima: parsePesos($('prima').value),
-      comisionPct: parseFloat($('comision').value),
-      retencionPct: parseFloat($('retencion').value)
+      numero: item.querySelector('.f-poliza').value.trim(),
+      compania: item.querySelector('.f-compania').value,
+      ramo: item.querySelector('.f-ramo').value,
+      vigIni: item.querySelector('.f-vig-ini').value,
+      vigFin: item.querySelector('.f-vig-fin').value,
+      prima: parsePesos(item.querySelector('.f-prima').value),
+      comisionPct: parseFloat(item.querySelector('.f-comision').value),
+      retencionPct: parseFloat(item.querySelector('.f-retencion').value),
+      eje: item.querySelector('.f-eje').value,
+      tema: item.querySelector('.f-tema').value,
+      actividad: item.querySelector('.f-actividad').value.trim()
     };
   }
 
-  function pctValido(v) { return !isNaN(v) && v >= 0 && v <= 100; }
-
-  // mostrar=true marca los campos con error (se usa al generar el reporte)
-  function validar(datos, mostrar) {
+  // mostrar=true marca los campos con error (al generar el reporte)
+  function validarPoliza(item, mostrar) {
+    var d = leerPoliza(item);
     var errs = {
-      empresa: $('empresa').value.trim() ? '' : 'Ingrese o seleccione la empresa asegurada.',
-      poliza: $('poliza').value.trim() ? '' : 'Ingrese el número de póliza o cotización.',
-      prima: datos.prima > 0 ? '' : 'Ingrese el valor de la prima.',
-      comision: pctValido(datos.comisionPct) ? '' : 'Debe estar entre 0 y 100.',
-      retencion: pctValido(datos.retencionPct) ? '' : 'Debe estar entre 0 y 100.'
+      poliza: d.numero ? '' : 'Ingrese el número de póliza o cotización.',
+      prima: d.prima > 0 ? '' : 'Ingrese el valor de la prima.',
+      comision: pctValido(d.comisionPct) ? '' : 'Debe estar entre 0 y 100.',
+      retencion: pctValido(d.retencionPct) ? '' : 'Debe estar entre 0 y 100.'
     };
     var ok = true;
     Object.keys(errs).forEach(function (k) {
       if (errs[k]) ok = false;
       if (mostrar) {
-        $(k).classList.toggle('invalid', !!errs[k]);
-        $('err-' + k).textContent = errs[k];
+        var campo = item.querySelector('.f-' + (k === 'poliza' ? 'poliza' : k === 'prima' ? 'prima' : k === 'comision' ? 'comision' : 'retencion'));
+        campo.classList.toggle('invalid', !!errs[k]);
+        item.querySelector('.err-' + k).textContent = errs[k];
       }
     });
     return ok;
   }
 
-  function pintarDesglose(r) {
-    $('d-prima').textContent = cop(r.prima);
-    $('d-comision').textContent = cop(r.comisionBruta);
-    $('d-comision-pct').textContent = r.comisionPct;
-    $('d-comision-pct2').textContent = r.comisionPct;
-    $('d-ret').textContent = copNeg(r.retenciones);
-    $('d-ret-pct').textContent = r.retencionPct;
-    $('d-ret-pct2').textContent = r.retencionPct;
-    $('d-neta').textContent = cop(r.comisionNeta);
-    $('d-fondo').textContent = cop(r.fondoImpacto);
-    $('d-eq').textContent = r.equivalentePrima.toFixed(2) + '%';
-  }
-
-  function pintarVacio() {
-    ['d-prima', 'd-comision', 'd-neta', 'd-fondo'].forEach(function (id) { $(id).textContent = '$ 0'; });
-    $('d-ret').textContent = '- $ 0';
-    $('d-eq').textContent = '0%';
-  }
-
-  function recalcular() {
-    var datos = leerForm();
-    if (!pctValido(datos.comisionPct) || !pctValido(datos.retencionPct)) { pintarVacio(); return; }
-    pintarDesglose(FI.calcular(datos));
-  }
-
-  // ---------- Chips ----------
-  document.querySelectorAll('.chips[data-target]').forEach(function (grp) {
-    grp.addEventListener('click', function (e) {
-      var b = e.target.closest('.chip');
-      if (!b) return;
-      $(grp.getAttribute('data-target')).value = b.getAttribute('data-v');
-      recalcular();
+  function validarTodo(mostrar) {
+    var ok = true;
+    var empresa = $('empresa').value.trim();
+    if (!empresa) ok = false;
+    if (mostrar) {
+      $('empresa').classList.toggle('invalid', !empresa);
+      $('err-empresa').textContent = empresa ? '' : 'Ingrese el nombre de la empresa asegurada.';
+    }
+    polizasEl.querySelectorAll('.poliza-item').forEach(function (it) {
+      if (!validarPoliza(it, mostrar)) ok = false;
     });
-  });
+    return ok;
+  }
 
-  // ---------- Prima con separador de miles ----------
-  $('prima').addEventListener('input', function (e) {
-    var n = parsePesos(e.target.value);
-    e.target.value = formatPesos(n);
+  // ---------- Cálculo y desglose ----------
+  function recalcular() {
+    var items = polizasEl.querySelectorAll('.poliza-item');
+    var t = { prima: 0, comisionBruta: 0, retenciones: 0, comisionNeta: 0, fondoImpacto: 0 };
+    var lista = '';
+    var validas = 0;
+    items.forEach(function (it, i) {
+      var d = leerPoliza(it);
+      var nombre = 'Póliza ' + (i + 1) + (d.compania ? ' · ' + d.compania : '');
+      if (!pctValido(d.comisionPct) || !pctValido(d.retencionPct)) {
+        lista += '<div class="row small"><div class="lbl">' + esc(nombre) + '</div><div class="val">pendiente</div></div>';
+        return;
+      }
+      var r = FI.calcular({ prima: d.prima, comisionPct: d.comisionPct, retencionPct: d.retencionPct });
+      validas++;
+      t.prima += r.prima; t.comisionBruta += r.comisionBruta; t.retenciones += r.retenciones;
+      t.comisionNeta += r.comisionNeta; t.fondoImpacto += r.fondoImpacto;
+      lista += '<div class="row small"><div class="lbl">' + esc(nombre) + '</div><div class="val">' + cop(r.fondoImpacto) + '</div></div>';
+    });
+    $('d-polizas').innerHTML = lista;
+    $('d-npolizas').textContent = items.length + (items.length === 1 ? ' póliza' : ' pólizas');
+    if (validas === 0) {
+      ['d-prima', 'd-comision', 'd-neta', 'd-fondo'].forEach(function (id) { $(id).textContent = '$ 0'; });
+      $('d-ret').textContent = '- $ 0';
+      $('d-eq').textContent = '0%';
+      return;
+    }
+    $('d-prima').textContent = cop(t.prima);
+    $('d-comision').textContent = cop(t.comisionBruta);
+    $('d-ret').textContent = copNeg(t.retenciones);
+    $('d-neta').textContent = cop(t.comisionNeta);
+    $('d-fondo').textContent = cop(t.fondoImpacto);
+    $('d-eq').textContent = (t.prima > 0 ? (t.fondoImpacto / t.prima * 100) : 0).toFixed(2) + '%';
+  }
+
+  // ---------- Eventos de las pólizas (delegación) ----------
+  polizasEl.addEventListener('input', function (e) {
+    if (e.target.classList.contains('f-prima')) {
+      e.target.value = formatPesos(parsePesos(e.target.value));
+    }
     recalcular();
   });
-  ['comision', 'retencion'].forEach(function (id) {
-    $(id).addEventListener('input', recalcular);
+  polizasEl.addEventListener('change', function (e) {
+    if (e.target.classList.contains('f-eje')) actualizarHint(e.target.closest('.poliza-item'));
+  });
+  polizasEl.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (chip) {
+      var item = chip.closest('.poliza-item');
+      var campo = chip.parentElement.getAttribute('data-target');
+      item.querySelector('.f-' + campo).value = chip.getAttribute('data-v');
+      recalcular();
+      return;
+    }
+    var quitar = e.target.closest('.btn-quitar');
+    if (quitar && !quitar.disabled) {
+      quitar.closest('.poliza-item').remove();
+      renumerar();
+      recalcular();
+    }
+  });
+
+  $('btn-agregar').addEventListener('click', function () {
+    var item = agregarPoliza();
+    recalcular();
+    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 
   // ---------- Reset ----------
   $('btn-reset').addEventListener('click', function () {
-    ['empresa', 'poliza', 'prima', 'actividad'].forEach(function (id) { $(id).value = ''; });
-    $('tema').value = '';
-    $('comision').value = DEFAULTS.comision;
-    $('retencion').value = DEFAULTS.retencion;
+    $('empresa').value = '';
+    $('err-empresa').textContent = '';
+    $('empresa').classList.remove('invalid');
+    polizasEl.innerHTML = '';
+    agregarPoliza();
     recalcular();
   });
 
@@ -725,9 +823,7 @@
   });
 
   // ---------- Simulador ----------
-  var sim = {
-    prima: $('sim-prima'), comision: $('sim-comision'), ret: $('sim-ret')
-  };
+  var sim = { prima: $('sim-prima'), comision: $('sim-comision'), ret: $('sim-ret') };
 
   function recalcularSim() {
     var prima = parsePesos(sim.prima.value);
@@ -761,9 +857,9 @@
   sim.ret.addEventListener('input', recalcularSim);
 
   function abrirSim() {
-    sim.prima.value = formatPesos(parsePesos($('prima').value) || 10000000);
-    sim.comision.value = $('comision').value || 0;
-    sim.ret.value = $('retencion').value || 0;
+    sim.prima.value = formatPesos(10000000);
+    sim.comision.value = DEFAULTS.comision;
+    sim.ret.value = DEFAULTS.retencion;
     recalcularSim();
     $('sim-overlay').classList.add('open');
   }
@@ -773,102 +869,75 @@
   $('sim-close').addEventListener('click', cerrarSim);
   $('sim-cerrar').addEventListener('click', cerrarSim);
   $('sim-overlay').addEventListener('click', function (e) { if (e.target === this) cerrarSim(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { cerrarSim(); cerrarRep(); } });
 
+  // Desde el simulador se agrega una póliza nueva con esos valores
   $('sim-ir').addEventListener('click', function () {
-    setPrima(parsePesos(sim.prima.value));
-    $('comision').value = sim.comision.value;
-    $('retencion').value = sim.ret.value;
+    var item = agregarPoliza({
+      prima: parsePesos(sim.prima.value),
+      comisionPct: sim.comision.value,
+      retencionPct: sim.ret.value
+    });
     cerrarSim();
     recalcular();
-    $('prima').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 
-  // ---------- Temas de charla y frentes (documento base y enfoque de charlas) ----------
-  var TEMAS = [
-    { grupo: 'Personales', items: ['Manejo del estrés y las emociones', 'Comunicación consciente', 'Proyecto de vida', 'Liderazgo personal', 'Autocuidado y bienestar integral'] },
-    { grupo: 'Organizacionales', items: ['Cultura organizacional', 'Trabajo en equipo', 'Liderazgo consciente', 'Servicio al cliente', 'Gestión del cambio', 'Seguridad y salud en el trabajo (SST)'] },
-    { grupo: 'Sociales y de impacto', items: ['Convivencia y respeto', 'Sostenibilidad y cuidado del entorno', 'Relación con otros seres vivos', 'Responsabilidad social', 'Ética y valores'] }
-  ];
-  var FRENTES_PROYECTOS = {
-    'Bienestar': 'Salud mental · prevención del riesgo psicosocial · formación · clima organizacional · cumplimiento normativo · plan de trabajo ARL · fortalecimiento de pequeños negocios · mentoría y conexión con aliados · educación inclusiva y desarrollo comunitario.',
-    'Prevención': 'Seguridad y gestión de riesgos.',
-    'Sostenibilidad': 'Economía circular y reciclaje · uso responsable del agua y otros recursos · huertas en hogar y empresa · prácticas ESG · reducción de huella ambiental.',
-    'Crecimiento': 'Módulo de Crecimiento Empresarial ("Shark Tank de impacto"): nuevas ideas de negocio, emprendimientos locales o de colaboradores, y pequeñas empresas con alto potencial.'
-  };
-
-  (function initTemas() {
-    var sel = $('tema');
-    var vacio = document.createElement('option');
-    vacio.value = ''; vacio.textContent = '— Seleccione un tema —';
-    sel.appendChild(vacio);
-    TEMAS.forEach(function (g) {
-      var og = document.createElement('optgroup');
-      og.label = g.grupo;
-      g.items.forEach(function (t) {
-        var o = document.createElement('option');
-        o.value = t; o.textContent = t; og.appendChild(o);
-      });
-      sel.appendChild(og);
-    });
-    function pintarFrente() { $('frente-hint').textContent = 'Proyectos del frente: ' + FRENTES_PROYECTOS[$('eje').value]; }
-    $('eje').addEventListener('change', pintarFrente);
-    pintarFrente();
-  })();
-
   // ---------- Reporte ----------
-  function esc(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
   function fila(k, v, clase) {
     return '<tr' + (clase ? ' class="' + clase + '"' : '') + '><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>';
   }
 
   function generarReporte() {
-    var datos = leerForm();
-    if (!validar(datos, true)) {
+    if (!validarTodo(true)) {
       var primero = document.querySelector('.invalid');
       if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-    var r = FI.calcular(datos);
     var fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
-    var actividad = $('actividad').value.trim() || 'No especificada';
+    var items = polizasEl.querySelectorAll('.poliza-item');
+    var t = { prima: 0, comisionBruta: 0, retenciones: 0, comisionNeta: 0, fondoImpacto: 0, margen: 0 };
+    var filasPol = '', filasAsig = '';
+
+    items.forEach(function (it, i) {
+      var d = leerPoliza(it);
+      var r = FI.calcular({ prima: d.prima, comisionPct: d.comisionPct, retencionPct: d.retencionPct });
+      t.prima += r.prima; t.comisionBruta += r.comisionBruta; t.retenciones += r.retenciones;
+      t.comisionNeta += r.comisionNeta; t.fondoImpacto += r.fondoImpacto; t.margen += r.margenOperacion;
+      filasPol += '<tr><td>' + (i + 1) + '</td><td>' + esc(d.numero) + '</td><td>' + esc(d.compania) +
+        '</td><td>' + esc(d.ramo) + '</td><td>' + esc(d.vigIni + ' (' + d.vigFin + ')') +
+        '</td><td class="num">' + esc(cop(r.prima)) + '</td><td class="num">' + r.comisionPct + '%</td><td class="num">' +
+        r.retencionPct + '%</td><td class="num">' + esc(cop(r.fondoImpacto)) + '</td></tr>';
+      filasAsig += '<tr><td>' + (i + 1) + '</td><td>' + esc(d.numero) + '</td><td>' + esc(d.eje) +
+        '</td><td>' + esc(d.tema || 'No seleccionado') + '</td><td>' + esc(d.actividad || 'No especificada') + '</td></tr>';
+    });
 
     var html =
       '<div class="rep-head"><div style="display:flex;align-items:center;gap:14px"><img src="../img/images.jpeg" alt="Logo OSSA &amp; VEGA" style="width:64px;height:64px;border-radius:10px"><div><div class="rep-brand">OSSA &amp; VEGA</div>' +
       '<div class="rep-title">Reporte — Fondo de Impacto</div></div></div>' +
       '<div class="rep-date">Fecha de generación<br>' + esc(fecha) + '</div></div>' +
 
-      '<h4>1. Datos de la empresa y póliza</h4><table>' +
+      '<h4>1. Empresa asegurada</h4><table>' +
       fila('Empresa asegurada', $('empresa').value.trim()) +
-      fila('Número de póliza o cotización', $('poliza').value.trim()) +
-      fila('Compañía aseguradora', $('compania').value) +
-      fila('Ramo de seguro', $('ramo').value) +
-      fila('Periodo / vigencia', $('vig-inicio').value + ' (' + $('vig-fin').value + ')') +
+      fila('Número de pólizas', String(items.length)) +
       '</table>' +
 
-      '<h4>2. Parámetros financieros</h4><table>' +
-      fila('Prima comercial del seguro', cop(r.prima)) +
-      fila('% Comisión pactada agencia', r.comisionPct + '%') +
-      fila('% Deducción de impuestos (retefuente)', r.retencionPct + '%') +
+      '<h4>2. Pólizas registradas</h4>' +
+      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Compañía</td><td>Ramo</td><td>Vigencia</td><td>Prima</td><td>% Com.</td><td>% Ret.</td><td>Fondo</td></tr>' +
+      filasPol + '</table>' +
+
+      '<h4>3. Desglose total</h4><table>' +
+      fila('Paso 1 · Prima comercial total', cop(t.prima)) +
+      fila('Paso 2 · Comisión bruta total', cop(t.comisionBruta)) +
+      fila('Paso 3 · Retenciones / impuestos total', copNeg(t.retenciones), 'neg') +
+      fila('Paso 4 · Comisión neta agencia total', cop(t.comisionNeta)) +
+      fila('Paso 5 · Fondo de impacto total (40% neto)', cop(t.fondoImpacto), 'total') +
+      fila('Equivalente sobre prima total', (t.prima > 0 ? (t.fondoImpacto / t.prima * 100) : 0).toFixed(2) + '%') +
+      fila('Margen operación OSSA & VEGA (60% neto)', cop(t.margen)) +
       '</table>' +
 
-      '<h4>3. Desglose del cálculo</h4><table>' +
-      fila('Paso 1 · Prima comercial', cop(r.prima)) +
-      fila('Paso 2 · Comisión bruta (prima × ' + r.comisionPct + '%)', cop(r.comisionBruta)) +
-      fila('Paso 3 · Retenciones / impuestos (comisión × ' + r.retencionPct + '%)', copNeg(r.retenciones), 'neg') +
-      fila('Paso 4 · Comisión neta agencia', cop(r.comisionNeta)) +
-      fila('Paso 5 · Fondo de impacto (' + r.fondoPct + '% neto)', cop(r.fondoImpacto), 'total') +
-      fila('Equivalente sobre prima', r.equivalentePrima.toFixed(2) + '%') +
-      fila('Margen operación OSSA & VEGA (' + r.margenPct + '% neto)', cop(r.margenOperacion)) +
-      '</table>' +
-
-      '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
-      fila('Eje de impacto', $('eje').value) +
-      fila('Tema de charla', $('tema').value || 'No seleccionado') +
-      fila('Actividad / destino del fondo', actividad) +
-      '</table>' +
+      '<h4>4. Asignación al plan de trabajo anual</h4>' +
+      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Frente</td><td>Tema de charla</td><td>Actividad / destino</td></tr>' +
+      filasAsig + '</table>' +
 
       '<p class="rep-note">Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta ' +
       'recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
@@ -879,15 +948,16 @@
 
   function cerrarRep() { $('rep-overlay').classList.remove('open'); }
 
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { cerrarSim(); cerrarRep(); } });
   $('btn-reporte').addEventListener('click', generarReporte);
   $('rep-close').addEventListener('click', cerrarRep);
   $('rep-cerrar').addEventListener('click', cerrarRep);
   $('rep-imprimir').addEventListener('click', function () { window.print(); });
   $('rep-overlay').addEventListener('click', function (e) { if (e.target === this) cerrarRep(); });
 
-  // ---------- Estado inicial (sin valores por defecto en empresa, póliza y prima) ----------
-  $('comision').value = DEFAULTS.comision;
-  $('retencion').value = DEFAULTS.retencion;
+  // ---------- Temas (charla) y estado inicial ----------
+  // Estado inicial: una póliza vacía, con los porcentajes por defecto
+  agregarPoliza();
   recalcular();
 })();
 </script>
