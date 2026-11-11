@@ -83,7 +83,7 @@ Los campos de empresa, póliza y prima empiezan vacíos. El porcentaje de comisi
 
 ### Desglose en vivo
 
-El panel de la derecha recalcula al escribir. Muestra los cinco pasos con el total de todas las pólizas, el fondo total, su equivalente sobre la prima total y el fondo de cada póliza.
+El panel de la derecha recalcula al escribir. Muestra los cinco pasos con el total de todas las pólizas, el fondo total, su equivalente sobre la prima total y, en **Fondo por póliza**, el fondo de cada póliza junto con su compañía y su ramo de seguro.
 
 ### Simulador rápido
 
