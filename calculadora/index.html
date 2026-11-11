@@ -759,7 +759,7 @@
     var validas = 0;
     items.forEach(function (it, i) {
       var d = leerPoliza(it);
-      var nombre = 'Póliza ' + (i + 1) + (d.compania ? ' · ' + d.compania : '');
+      var nombre = 'Póliza ' + (i + 1) + (d.compania ? ' · ' + d.compania : '') + (d.ramo ? ' · ' + d.ramo : '');
       if (!pctValido(d.comisionPct) || !pctValido(d.retencionPct)) {
         lista += '<div class="row small"><div class="lbl">' + esc(nombre) + '</div><div class="val">pendiente</div></div>';
         return;
