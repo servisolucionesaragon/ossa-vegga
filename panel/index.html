@@ -231,7 +231,13 @@
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
   function cop(n) { return '$ ' + Number(n || 0).toLocaleString('es-CO'); }
-  function fechaCorta(s) { return String(s || '').slice(0, 16).replace('T', ' '); }
+  // Las fechas se guardan en UTC; se muestran en hora de Colombia (America/Bogota, UTC-5)
+  function fechaCorta(s) {
+    var d = new Date(String(s || '').replace(' ', 'T') + 'Z');
+    if (isNaN(d)) return String(s || '');
+    return d.toLocaleString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hour12: false });
+  }
 
   async function api(url, opts) {
     var r = await fetch(url, Object.assign({ credentials: 'same-origin', headers: { 'content-type': 'application/json' } }, opts || {}));
@@ -438,7 +444,7 @@
   function copNeg(n) { return '- ' + cop(n); }
   function fechaLarga(s) {
     var d = new Date(String(s || '').replace(' ', 'T') + 'Z');
-    return isNaN(d) ? String(s || '') : d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+    return isNaN(d) ? String(s || '') : d.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   function totalesDe(r) {

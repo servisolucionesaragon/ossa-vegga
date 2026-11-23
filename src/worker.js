@@ -98,6 +98,14 @@ function calcular(prima, comisionPct, retencionPct) {
   return { bruta, retenciones, neta, fondo };
 }
 
+// La base guarda la fecha en UTC; se exporta en hora de Colombia (UTC-5)
+function fechaBogota(s) {
+  const d = new Date(String(s || '').replace(' ', 'T') + 'Z');
+  if (isNaN(d)) return String(s || '');
+  return new Intl.DateTimeFormat('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
+}
+
 function csvCelda(v) {
   let s = v === null || v === undefined ? '' : String(v);
   // Evita que Excel interprete una celda como fórmula
@@ -302,7 +310,7 @@ async function api(request, env, url) {
       '% Retefuente', 'Comisión bruta (COP)', 'Retenciones (COP)', 'Comisión neta (COP)', 'Fondo de impacto (COP)'];
     const lineas = [cab.map(csvCelda).join(';')];
     for (const f of rs.results) {
-      lineas.push([f.id, f.creado, f.asesor, f.empresa, f.eje, f.tema, f.actividad, f.numero, f.compania, f.ramo,
+      lineas.push([f.id, fechaBogota(f.creado), f.asesor, f.empresa, f.eje, f.tema, f.actividad, f.numero, f.compania, f.ramo,
         f.vigencia_inicio, f.vigencia_fin, f.prima, f.comision_pct, f.retencion_pct, f.comision_bruta,
         f.retenciones, f.comision_neta, f.fondo].map(csvCelda).join(';'));
     }
