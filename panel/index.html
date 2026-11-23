@@ -95,7 +95,10 @@
       #reporte { padding-bottom: 28mm !important; }
     }
     .rep-redes img { width: 13px; height: 13px; vertical-align: -2px; margin: 0 3px 0 0; }
-    tr.urgente td { color: var(--danger); font-weight: 600; }
+    .semaforo { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+    .semaforo.verde { background: #2ecc71; }
+    .semaforo.amarillo { background: #f1c40f; }
+    .semaforo.rojo { background: #e74c3c; }
   </style>
 </head>
 <body>
@@ -377,8 +380,9 @@
       '<th>Compañía</th><th>Ramo</th><th>Asesor</th><th>Prima</th></tr></thead><tbody>' +
       filas.map(function (x) {
         var estado = x.faltan < 0 ? 'Vencida hace ' + (-x.faltan) + ' días' : x.faltan + ' días';
-        var clase = x.faltan <= 30 ? ' class="urgente"' : '';
-        return '<tr' + clase + '><td>' + esc(x.fin) + '</td><td>' + esc(estado) + '</td><td>' + esc(x.empresa) +
+        var semaforo = (x.faltan < 0 || x.faltan <= 30) ? 'rojo' : (x.faltan <= 60 ? 'amarillo' : 'verde');
+        return '<tr><td>' + esc(x.fin) + '</td><td><span class="semaforo ' + semaforo + '"></span>' + esc(estado) +
+          '</td><td>' + esc(x.empresa) +
           '</td><td>' + esc(x.p.numero) + '</td><td>' + esc(x.p.compania) + '</td><td>' + esc(x.p.ramo) +
           '</td><td>' + esc(x.asesor) + '</td><td class="num">' + cop(x.p.prima) + '</td></tr>';
       }).join('') + '</tbody></table></div>';
