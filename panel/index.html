@@ -388,7 +388,7 @@
     var t = totalesDe(r);
     var filasPol = (r.polizas || []).map(function (p, i) {
       return '<tr><td>' + (i + 1) + '</td><td>' + esc(p.numero) + '</td><td>' + esc(p.compania) + '</td><td>' + esc(p.ramo) +
-        '</td><td>' + esc(p.vigencia_inicio + ' (' + p.vigencia_fin + ')') + '</td><td class="num">' + cop(p.prima) +
+        '</td><td>' + esc(p.vigencia_inicio) + '<br>' + esc(p.vigencia_fin) + '</td><td class="num">' + cop(p.prima) +
         '</td><td class="num">' + p.comision_pct + '%</td><td class="num">' + cop(p.fondo) + '</td></tr>';
     }).join('');
     var html =

@@ -1035,7 +1035,7 @@
       var r = FI.calcular({ prima: d.prima, comisionPct: d.comisionPct, retencionPct: d.retencionPct });
       t.prima += r.prima; t.fondo += r.fondoImpacto;
       filasPol += '<tr><td>' + (i + 1) + '</td><td>' + esc(d.numero) + '</td><td>' + esc(d.compania) + '</td><td>' + esc(d.ramo) +
-        '</td><td>' + esc(d.vigIni + ' (' + d.vigFin + ')') + '</td><td class="num">' + esc(cop(r.prima)) +
+        '</td><td>' + esc(d.vigIni) + '<br>' + esc(d.vigFin) + '</td><td class="num">' + esc(cop(r.prima)) +
         '</td><td class="num">' + r.comisionPct + '%</td><td class="num">' + esc(cop(r.fondoImpacto)) + '</td></tr>';
     });
 
