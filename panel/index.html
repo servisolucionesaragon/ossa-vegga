@@ -84,6 +84,10 @@
     .peligro-txt { font-size: 13px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
     .btn-borrar { color: #fff; background: var(--danger); border-color: var(--danger); font-weight: 600; }
     .btn-borrar:hover { background: #a32d20; color: #fff; }
+    /* Marca de agua del logo en el reporte (30% de opacidad) */
+    #reporte { position: relative; isolation: isolate; overflow: hidden; }
+    #reporte .marca-agua { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
+      width: 72%; opacity: .3; z-index: -1; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -378,9 +382,10 @@
     var filasPol = (r.polizas || []).map(function (p, i) {
       return '<tr><td>' + (i + 1) + '</td><td>' + esc(p.numero) + '</td><td>' + esc(p.compania) + '</td><td>' + esc(p.ramo) +
         '</td><td>' + esc(p.vigencia_inicio + ' (' + p.vigencia_fin + ')') + '</td><td class="num">' + cop(p.prima) +
-        '</td><td class="num">' + p.comision_pct + '%</td><td class="num">' + p.retencion_pct + '%</td><td class="num">' + cop(p.fondo) + '</td></tr>';
+        '</td><td class="num">' + p.comision_pct + '%</td><td class="num">' + cop(p.fondo) + '</td></tr>';
     }).join('');
     var html =
+      '<img class="marca-agua" src="../img/images.jpeg" alt="">' +
       '<div class="rep-head"><div style="display:flex;align-items:center;gap:14px"><img src="../img/images.jpeg" alt="Logo OSSA &amp; VEGA" style="width:64px;height:64px;border-radius:10px"><div><div class="rep-brand">OSSA &amp; VEGA</div>' +
       '<div class="rep-title">Reporte — Fondo de Impacto</div></div></div>' +
       '<div class="rep-date">Fecha de generación<br>' + esc(new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })) + '</div></div>' +
@@ -389,22 +394,19 @@
       fila('Fecha de registro', fechaLarga(r.creado)) + fila('Número de pólizas', String((r.polizas || []).length)) +
       '</table>' +
       '<h4>2. Pólizas registradas</h4>' +
-      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Compañía</td><td>Ramo</td><td>Vigencia</td><td>Prima</td><td>% Com.</td><td>% Ret.</td><td>Fondo</td></tr>' +
+      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Compañía</td><td>Ramo</td><td>Vigencia</td><td>Prima</td><td>% Com.</td><td>Fondo</td></tr>' +
       filasPol + '</table>' +
-      '<h4>3. Desglose total</h4><table>' +
-      fila('Paso 1 · Prima comercial total', cop(t.prima)) +
-      fila('Paso 2 · Comisión bruta total', cop(t.bruta)) +
-      fila('Paso 3 · Retenciones / impuestos total', copNeg(t.ret), 'neg') +
-      fila('Paso 4 · Comisión neta agencia total', cop(t.neta)) +
-      fila('Paso 5 · Fondo de impacto total (40% neto)', cop(t.fondo), 'total') +
-      fila('Equivalente sobre prima total', (t.prima > 0 ? (t.fondo / t.prima * 100) : 0).toFixed(2) + '%') +
-      fila('Margen operación OSSA & VEGA (60% neto)', cop(t.neta - t.fondo)) +
+      '<h4>3. Resumen</h4><table>' +
+      fila('Número de pólizas', String((r.polizas || []).length)) +
+      fila('Prima total de las pólizas', cop(t.prima)) +
+      fila('Fondo de impacto total (40% neto)', cop(t.fondo), 'total') +
       '</table>' +
       '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
       fila('Frente de impacto', r.eje || '—') + fila('Tema de charla', r.tema || 'No seleccionado') +
       fila('Actividad / destino del fondo', r.actividad || 'No especificada') +
       '</table>' +
-      '<p class="rep-note">Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
+      '<p class="rep-note">Los valores de este reporte son una proyección con base en los aportes mensuales generados por ARL; corresponden a montos mensuales actuales.<br>' +
+      'Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
     document.getElementById('reporte').innerHTML = html;
     document.getElementById('ovl-rep').classList.add('open');
   }

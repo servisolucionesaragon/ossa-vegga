@@ -319,6 +319,10 @@
     #reporte table.tabla-pol td.num { text-align: right; white-space: nowrap; }
     input.invalid, select.invalid { border-color: var(--danger); }
     .shared-nota { font-size: 12px; font-weight: 400; color: var(--muted); }
+    /* Marca de agua del logo en el reporte (30% de opacidad) */
+    #reporte { position: relative; isolation: isolate; overflow: hidden; }
+    #reporte .marca-agua { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
+      width: 72%; opacity: .3; z-index: -1; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -951,21 +955,19 @@
     }
     var fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
     var items = polizasEl.querySelectorAll('.poliza-item');
-    var t = { prima: 0, comisionBruta: 0, retenciones: 0, comisionNeta: 0, fondoImpacto: 0, margen: 0 };
+    var t = { prima: 0, fondo: 0 };
     var filasPol = '';
-
     items.forEach(function (it, i) {
       var d = leerPoliza(it);
       var r = FI.calcular({ prima: d.prima, comisionPct: d.comisionPct, retencionPct: d.retencionPct });
-      t.prima += r.prima; t.comisionBruta += r.comisionBruta; t.retenciones += r.retenciones;
-      t.comisionNeta += r.comisionNeta; t.fondoImpacto += r.fondoImpacto; t.margen += r.margenOperacion;
-      filasPol += '<tr><td>' + (i + 1) + '</td><td>' + esc(d.numero) + '</td><td>' + esc(d.compania) +
-        '</td><td>' + esc(d.ramo) + '</td><td>' + esc(d.vigIni + ' (' + d.vigFin + ')') +
-        '</td><td class="num">' + esc(cop(r.prima)) + '</td><td class="num">' + r.comisionPct + '%</td><td class="num">' +
-        r.retencionPct + '%</td><td class="num">' + esc(cop(r.fondoImpacto)) + '</td></tr>';
+      t.prima += r.prima; t.fondo += r.fondoImpacto;
+      filasPol += '<tr><td>' + (i + 1) + '</td><td>' + esc(d.numero) + '</td><td>' + esc(d.compania) + '</td><td>' + esc(d.ramo) +
+        '</td><td>' + esc(d.vigIni + ' (' + d.vigFin + ')') + '</td><td class="num">' + esc(cop(r.prima)) +
+        '</td><td class="num">' + r.comisionPct + '%</td><td class="num">' + esc(cop(r.fondoImpacto)) + '</td></tr>';
     });
 
     var html =
+      '<img class="marca-agua" src="../img/images.jpeg" alt="">' +
       '<div class="rep-head"><div style="display:flex;align-items:center;gap:14px"><img src="../img/images.jpeg" alt="Logo OSSA &amp; VEGA" style="width:64px;height:64px;border-radius:10px"><div><div class="rep-brand">OSSA &amp; VEGA</div>' +
       '<div class="rep-title">Reporte — Fondo de Impacto</div></div></div>' +
       '<div class="rep-date">Fecha de generación<br>' + esc(fecha) + '</div></div>' +
@@ -976,17 +978,13 @@
       '</table>' +
 
       '<h4>2. Pólizas registradas</h4>' +
-      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Compañía</td><td>Ramo</td><td>Vigencia</td><td>Prima</td><td>% Com.</td><td>% Ret.</td><td>Fondo</td></tr>' +
+      '<table class="tabla-pol"><tr class="cab"><td>#</td><td>Póliza</td><td>Compañía</td><td>Ramo</td><td>Vigencia</td><td>Prima</td><td>% Com.</td><td>Fondo</td></tr>' +
       filasPol + '</table>' +
 
-      '<h4>3. Desglose total</h4><table>' +
-      fila('Paso 1 · Prima comercial total', cop(t.prima)) +
-      fila('Paso 2 · Comisión bruta total', cop(t.comisionBruta)) +
-      fila('Paso 3 · Retenciones / impuestos total', copNeg(t.retenciones), 'neg') +
-      fila('Paso 4 · Comisión neta agencia total', cop(t.comisionNeta)) +
-      fila('Paso 5 · Fondo de impacto total (40% neto)', cop(t.fondoImpacto), 'total') +
-      fila('Equivalente sobre prima total', (t.prima > 0 ? (t.fondoImpacto / t.prima * 100) : 0).toFixed(2) + '%') +
-      fila('Margen operación OSSA & VEGA (60% neto)', cop(t.margen)) +
+      '<h4>3. Resumen</h4><table>' +
+      fila('Número de pólizas', String(items.length)) +
+      fila('Prima total de las pólizas', cop(t.prima)) +
+      fila('Fondo de impacto total (40% neto)', cop(t.fondo), 'total') +
       '</table>' +
 
       '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
@@ -995,8 +993,8 @@
       fila('Actividad / destino del fondo', $('actividad').value.trim() || 'No especificada') +
       '</table>' +
 
-      '<p class="rep-note">Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta ' +
-      'recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
+      '<p class="rep-note">Los valores de este reporte son una proyección con base en los aportes mensuales generados por ARL; corresponden a montos mensuales actuales.<br>' +
+      'Regla OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta recibida por la agencia post-impuestos, jamás sobre el valor de la prima del seguro.</p>';
 
     $('reporte').innerHTML = html;
     $('rep-overlay').classList.add('open');
