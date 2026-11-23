@@ -319,10 +319,16 @@
     #reporte table.tabla-pol td.num { text-align: right; white-space: nowrap; }
     input.invalid, select.invalid { border-color: var(--danger); }
     .shared-nota { font-size: 12px; font-weight: 400; color: var(--muted); }
+    /* Fecha con calendario */
+    .fecha-wrap { position: relative; }
+    .fecha-wrap input[type="text"] { padding-right: 40px; }
+    .cal-ico { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 16px; }
+    .f-cal { position: absolute; right: 0; top: 0; width: 44px; height: 100%; opacity: 0; cursor: pointer; border: 0; padding: 0; }
+
     /* Marca de agua del logo en el reporte (30% de opacidad) */
     #reporte { position: relative; isolation: isolate; overflow: hidden; }
     #reporte .marca-agua { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
-      width: 72%; opacity: .2; z-index: -1; pointer-events: none; }
+      width: 72%; opacity: .15; z-index: -1; pointer-events: none; }
     /* Pie de página del reporte con datos de contacto */
     .rep-pie { margin-top: 18px; border-top: 1px solid #e3e8ee; padding-top: 8px; font-size: 11px; color: #4b5663; line-height: 1.5; }
     @media print {
@@ -653,8 +659,10 @@
       '      <select class="f-ramo">' + opciones(RAMOS) + '</select></div>' +
       '    <div class="field"><label>Periodo / vigencia</label>' +
       '      <div class="grid-2" style="gap:8px">' +
-      '        <input class="f-vig-ini" type="text" inputmode="numeric" maxlength="10" placeholder="Inicio DD-MM-AAAA" aria-label="Fecha de inicio">' +
-      '        <input class="f-vig-fin" type="text" inputmode="numeric" maxlength="10" placeholder="Fin DD-MM-AAAA" aria-label="Fecha de fin">' +
+      '        <div class="fecha-wrap"><input class="f-vig-ini" type="text" inputmode="numeric" maxlength="10" placeholder="Inicio DD-MM-AAAA" aria-label="Fecha de inicio">' +
+      '          <span class="cal-ico" aria-hidden="true">📅</span><input class="f-cal f-cal-ini" type="date" tabindex="-1" aria-label="Elegir fecha de inicio"></div>' +
+      '        <div class="fecha-wrap"><input class="f-vig-fin" type="text" inputmode="numeric" maxlength="10" placeholder="Fin DD-MM-AAAA" aria-label="Fecha de fin">' +
+      '          <span class="cal-ico" aria-hidden="true">📅</span><input class="f-cal f-cal-fin" type="date" tabindex="-1" aria-label="Elegir fecha de fin"></div>' +
       '      </div>' +
       '      <div class="error err-vigencia"></div></div>' +
       '  </div>' +
@@ -743,6 +751,15 @@
     return f.getFullYear() === anio && f.getMonth() === mes - 1 && f.getDate() === dia;
   }
 
+  function isoDeFecha(s) {
+    var m = String(s).match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    return m ? m[3] + '-' + m[2] + '-' + m[1] : '';
+  }
+  function fechaDeIso(v) {
+    var m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? m[3] + '-' + m[2] + '-' + m[1] : '';
+  }
+
   // mostrar=true marca los campos con error (al generar el reporte)
   function validarPoliza(item, mostrar) {
     var d = leerPoliza(item);
@@ -819,6 +836,8 @@
   polizasEl.addEventListener('input', function (e) {
     if (e.target.classList.contains('f-vig-ini') || e.target.classList.contains('f-vig-fin')) {
       e.target.value = mascaraFecha(e.target.value);
+      var cal = e.target.parentElement.querySelector('.f-cal');
+      cal.value = isoDeFecha(e.target.value);
     }
     if (e.target.classList.contains('f-prima')) {
       e.target.value = formatPesos(parsePesos(e.target.value));
@@ -826,6 +845,14 @@
     recalcular();
   });
   $('eje').addEventListener('change', actualizarHint);
+  polizasEl.addEventListener('change', function (e) {
+    if (e.target.classList.contains('f-cal')) {
+      var campo = e.target.parentElement.querySelector('.f-vig-' + (e.target.classList.contains('f-cal-ini') ? 'ini' : 'fin'));
+      campo.value = fechaDeIso(e.target.value);
+      campo.classList.remove('invalid');
+      recalcular();
+    }
+  });
   polizasEl.addEventListener('click', function (e) {
     var chip = e.target.closest('.chip');
     if (chip) {
