@@ -653,9 +653,10 @@
       '      <select class="f-ramo">' + opciones(RAMOS) + '</select></div>' +
       '    <div class="field"><label>Periodo / vigencia</label>' +
       '      <div class="grid-2" style="gap:8px">' +
-      '        <input class="f-vig-ini" type="number" min="2000" max="2100" value="2026" aria-label="Año de inicio">' +
-      '        <input class="f-vig-fin" type="text" value="2026 - 2027" aria-label="Vigencia completa">' +
-      '      </div></div>' +
+      '        <input class="f-vig-ini" type="text" inputmode="numeric" maxlength="10" placeholder="Inicio DD-MM-AAAA" aria-label="Fecha de inicio">' +
+      '        <input class="f-vig-fin" type="text" inputmode="numeric" maxlength="10" placeholder="Fin DD-MM-AAAA" aria-label="Fecha de fin">' +
+      '      </div>' +
+      '      <div class="error err-vigencia"></div></div>' +
       '  </div>' +
       '  <div class="field"><label>Prima comercial del seguro ($ COP)</label>' +
       '    <div class="input-prefix"><span>$</span>' +
@@ -726,6 +727,22 @@
     };
   }
 
+  // Fecha DD-MM-AAAA: máscara al escribir y validación real del día
+  function mascaraFecha(s) {
+    var d = String(s).replace(/\D/g, '').slice(0, 8);
+    var out = d.slice(0, 2);
+    if (d.length > 2) out += '-' + d.slice(2, 4);
+    if (d.length > 4) out += '-' + d.slice(4);
+    return out;
+  }
+  function fechaValida(s) {
+    var m = String(s).match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    if (!m) return false;
+    var dia = parseInt(m[1], 10), mes = parseInt(m[2], 10), anio = parseInt(m[3], 10);
+    var f = new Date(anio, mes - 1, dia);
+    return f.getFullYear() === anio && f.getMonth() === mes - 1 && f.getDate() === dia;
+  }
+
   // mostrar=true marca los campos con error (al generar el reporte)
   function validarPoliza(item, mostrar) {
     var d = leerPoliza(item);
@@ -733,13 +750,15 @@
       poliza: d.numero ? '' : 'Ingrese el número de póliza o cotización.',
       prima: d.prima > 0 ? '' : 'Ingrese el valor de la prima.',
       comision: pctValido(d.comisionPct) ? '' : 'Debe estar entre 0 y 100.',
-      retencion: pctValido(d.retencionPct) ? '' : 'Debe estar entre 0 y 100.'
+      retencion: pctValido(d.retencionPct) ? '' : 'Debe estar entre 0 y 100.',
+      vigencia: (fechaValida(d.vigIni) && fechaValida(d.vigFin)) ? '' : 'Use fechas válidas en formato DD-MM-AAAA.'
     };
     var ok = true;
     Object.keys(errs).forEach(function (k) {
       if (errs[k]) ok = false;
       if (mostrar) {
-        var campo = item.querySelector('.f-' + (k === 'poliza' ? 'poliza' : k === 'prima' ? 'prima' : k === 'comision' ? 'comision' : 'retencion'));
+        var clase = { poliza: 'f-poliza', prima: 'f-prima', comision: 'f-comision', retencion: 'f-retencion', vigencia: 'f-vig-ini' }[k];
+        var campo = item.querySelector('.' + clase);
         campo.classList.toggle('invalid', !!errs[k]);
         item.querySelector('.err-' + k).textContent = errs[k];
       }
@@ -798,6 +817,9 @@
 
   // ---------- Eventos de las pólizas (delegación) ----------
   polizasEl.addEventListener('input', function (e) {
+    if (e.target.classList.contains('f-vig-ini') || e.target.classList.contains('f-vig-fin')) {
+      e.target.value = mascaraFecha(e.target.value);
+    }
     if (e.target.classList.contains('f-prima')) {
       e.target.value = formatPesos(parsePesos(e.target.value));
     }

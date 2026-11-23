@@ -251,6 +251,9 @@ async function api(request, env, url) {
       const c = Number(pol.comisionPct);
       const r = Number(pol.retencionPct);
       if (!numero) return json({ error: 'Cada póliza necesita número o cotización.' }, 400);
+      if (!/^\d{2}-\d{2}-\d{4}$/.test(String(pol.vigIni || '')) || !/^\d{2}-\d{2}-\d{4}$/.test(String(pol.vigFin || ''))) {
+        return json({ error: 'Las fechas de vigencia deben tener formato DD-MM-AAAA.' }, 400);
+      }
       if (!Number.isFinite(prima) || prima <= 0) return json({ error: 'Cada póliza necesita una prima mayor a cero.' }, 400);
       if (!Number.isFinite(c) || c < 0 || c > 100 || !Number.isFinite(r) || r < 0 || r > 100) {
         return json({ error: 'Los porcentajes deben estar entre 0 y 100.' }, 400);
