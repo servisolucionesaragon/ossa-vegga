@@ -285,7 +285,9 @@
       return '<tr><td>' + esc(u.nombre) + '</td><td>' + esc(u.email) + '</td><td>' + esc(u.rol) +
         '</td><td><span class="badge ' + (activo ? '' : 'off') + '">' + (activo ? 'Activo' : 'Desactivado') + '</span></td>' +
         '<td><button class="btn" data-accion="activo" data-id="' + u.id + '" data-valor="' + (activo ? '0' : '1') + '">' +
-        (activo ? 'Desactivar' : 'Activar') + '</button> <button class="btn" data-accion="clave" data-id="' + u.id + '">Nueva contraseña</button></td></tr>';
+        (activo ? 'Desactivar' : 'Activar') + '</button> <button class="btn" data-accion="clave" data-id="' + u.id + '">Nueva contraseña</button> ' +
+        '<button class="btn" data-accion="rol" data-id="' + u.id + '" data-valor="' + (u.rol === 'admin' ? 'asesor' : 'admin') + '">' +
+        (u.rol === 'admin' ? 'Pasar a asesor' : 'Pasar a administrador') + '</button></td></tr>';
     }).join('');
     document.getElementById('tabla-usuarios').innerHTML =
       '<div style="overflow-x:auto"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>' + filas + '</tbody></table></div>';
@@ -345,7 +347,13 @@
     var b = e.target.closest('button[data-accion]');
     if (!b) return;
     var id = b.getAttribute('data-id');
-    if (b.getAttribute('data-accion') === 'activo') {
+    if (b.getAttribute('data-accion') === 'rol') {
+      var nuevoRol = b.getAttribute('data-valor');
+      if (!confirm('¿Cambiar el rol de este usuario a ' + (nuevoRol === 'admin' ? 'administrador' : 'asesor') + '?')) return;
+      var rr = await api('/api/usuarios/' + id, { method: 'PATCH', body: JSON.stringify({ rol: nuevoRol }) });
+      mensaje('msg-usuarios', rr.ok ? 'Rol actualizado.' : (rr.data.error || 'No se pudo cambiar el rol.'), rr.ok);
+      cargarUsuarios();
+    } else if (b.getAttribute('data-accion') === 'activo') {
       var r = await api('/api/usuarios/' + id, { method: 'PATCH', body: JSON.stringify({ activo: b.getAttribute('data-valor') === '1' }) });
       mensaje('msg-usuarios', r.ok ? 'Estado actualizado.' : (r.data.error || 'No se pudo actualizar.'), r.ok);
       cargarUsuarios();
