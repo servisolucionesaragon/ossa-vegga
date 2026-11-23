@@ -478,9 +478,7 @@
       '<td class="num">' + cop(t.bruta) + '</td><td class="num">' + copNeg(t.ret) + '</td><td class="num">' + cop(t.neta) + '</td>' +
       '<td class="num">' + cop(t.fondo) + '</td></tr></tbody></table>';
     document.getElementById('det-totales').innerHTML =
-      '<div class="row"><div class="lbl">Fondo de impacto total (40% de la comisión neta)</div><div class="val">' + cop(t.fondo) + '</div></div>' +
-      '<div class="lbl" style="font-size:12px;color:var(--muted)">Equivalente sobre prima total: ' +
-      (t.prima > 0 ? (t.fondo / t.prima * 100).toFixed(2) : '0.00') + '%</div>';
+      '<div class="row"><div class="lbl">Fondo de impacto total (40% de la comisión neta)</div><div class="val">' + cop(t.fondo) + '</div></div>';
     document.getElementById('bloque-detalle').dataset.id = r.id;
     document.getElementById('bloque-detalle').classList.remove('oculto');
     var fila = document.querySelector('button[data-ver="' + r.id + '"]');
