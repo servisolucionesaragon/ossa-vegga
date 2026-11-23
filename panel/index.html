@@ -511,6 +511,8 @@
       fila('Número de pólizas', String((r.polizas || []).length)) +
       fila('Prima total de las pólizas', cop(t.prima)) +
       fila('Fondo de impacto total (40% neto)', cop(t.fondo), 'total') +
+      fila('Fondo de impacto mensual', cop(t.fondo)) +
+      fila('Fondo de impacto anual (mensual × 12)', cop(t.fondo * 12)) +
       '</table>' +
       '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
       fila('Frente de impacto', r.eje || '—') + fila('Tema de charla', r.tema || 'No seleccionado') +

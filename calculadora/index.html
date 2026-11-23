@@ -460,6 +460,8 @@
         </div>
         <div class="amount" id="d-fondo">$ 0</div>
         <div class="desc">Monto disponible para financiar el Plan de Trabajo Anual de la empresa seleccionada.</div>
+        <div class="eq"><span>Fondo mensual:</span><b id="d-mensual">$ 0</b></div>
+        <div class="eq"><span>Fondo anual (mensual × 12):</span><b id="d-anual">$ 0</b></div>
       </div>
 
       <div class="por-poliza-titulo">Fondo por póliza</div>
@@ -833,7 +835,7 @@
     $('d-polizas').innerHTML = lista;
     $('d-npolizas').textContent = items.length + (items.length === 1 ? ' póliza' : ' pólizas');
     if (validas === 0) {
-      ['d-prima', 'd-comision', 'd-neta', 'd-fondo'].forEach(function (id) { $(id).textContent = '$ 0'; });
+      ['d-prima', 'd-comision', 'd-neta', 'd-fondo', 'd-mensual', 'd-anual'].forEach(function (id) { $(id).textContent = '$ 0'; });
       $('d-ret').textContent = '- $ 0';
       return;
     }
@@ -842,6 +844,8 @@
     $('d-ret').textContent = copNeg(t.retenciones);
     $('d-neta').textContent = cop(t.comisionNeta);
     $('d-fondo').textContent = cop(t.fondoImpacto);
+    $('d-mensual').textContent = cop(t.fondoImpacto);
+    $('d-anual').textContent = cop(t.fondoImpacto * 12);
   }
 
   // ---------- Eventos de las pólizas (delegación) ----------
@@ -1053,6 +1057,8 @@
       fila('Número de pólizas', String(items.length)) +
       fila('Prima total de las pólizas', cop(t.prima)) +
       fila('Fondo de impacto total (40% neto)', cop(t.fondo), 'total') +
+      fila('Fondo de impacto mensual', cop(t.fondo)) +
+      fila('Fondo de impacto anual (mensual × 12)', cop(t.fondo * 12)) +
       '</table>' +
 
       '<h4>4. Asignación al plan de trabajo anual</h4><table>' +
