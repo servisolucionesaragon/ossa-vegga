@@ -321,10 +321,11 @@
     .shared-nota { font-size: 12px; font-weight: 400; color: var(--muted); }
     /* Fecha con calendario */
     .fecha-wrap { position: relative; }
-    .fecha-wrap input[type="text"] { padding-right: 40px; }
-    .cal-ico { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; font-size: 16px; padding: 4px; line-height: 1; }
-    .cal-ico:hover { background: var(--brand-soft); border-radius: 6px; }
-    .f-cal { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
+    .fecha-wrap input[type="text"] { padding-right: 44px; }
+    .f-cal { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px;
+      margin: 0; padding: 0; border: 0; background: transparent; cursor: pointer; }
+    .f-cal::-webkit-datetime-edit { display: none; }
+    .f-cal::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 1; cursor: pointer; }
 
     /* Marca de agua del logo en el reporte (30% de opacidad) */
     #reporte { position: relative; isolation: isolate; overflow: hidden; }
@@ -661,9 +662,9 @@
       '    <div class="field"><label>Periodo / vigencia</label>' +
       '      <div class="grid-2" style="gap:8px">' +
       '        <div class="fecha-wrap"><input class="f-vig-ini" type="text" inputmode="numeric" maxlength="10" placeholder="Inicio DD-MM-AAAA" aria-label="Fecha de inicio">' +
-      '          <button type="button" class="cal-ico" aria-label="Abrir calendario para la fecha de inicio">📅</button><input class="f-cal f-cal-ini" type="date" tabindex="-1" aria-hidden="true"></div>' +
+      '          <input class="f-cal f-cal-ini" type="date" aria-label="Abrir calendario: fecha de inicio"></div>' +
       '        <div class="fecha-wrap"><input class="f-vig-fin" type="text" inputmode="numeric" maxlength="10" placeholder="Fin DD-MM-AAAA" aria-label="Fecha de fin">' +
-      '          <button type="button" class="cal-ico" aria-label="Abrir calendario para la fecha de fin">📅</button><input class="f-cal f-cal-fin" type="date" tabindex="-1" aria-hidden="true"></div>' +
+      '          <input class="f-cal f-cal-fin" type="date" aria-label="Abrir calendario: fecha de fin"></div>' +
       '      </div>' +
       '      <div class="error err-vigencia"></div></div>' +
       '  </div>' +
@@ -846,12 +847,6 @@
     recalcular();
   });
   $('eje').addEventListener('change', actualizarHint);
-  polizasEl.addEventListener('click', function (e) {
-    var ico = e.target.closest('.cal-ico');
-    if (!ico) return;
-    var cal = ico.parentElement.querySelector('.f-cal');
-    if (cal.showPicker) { cal.showPicker(); } else { cal.focus(); cal.click(); }
-  });
   polizasEl.addEventListener('change', function (e) {
     if (e.target.classList.contains('f-cal')) {
       var campo = e.target.parentElement.querySelector('.f-vig-' + (e.target.classList.contains('f-cal-ini') ? 'ini' : 'fin'));
