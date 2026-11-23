@@ -163,7 +163,7 @@ Rutas principales de la API:
 - `img/images.jpeg`: logo azul sobre fondo blanco, usado en el encabezado de las páginas y en el reporte. El hero de la landing también lo muestra en una tarjeta blanca.
 - `img/790425311_18092511653243610_8166161408051306571_n.jpg`: logo blanco sobre fondo azul, usado como favicon.
 - `img/personas.jpg`: fotografía del equipo.
-- `img/facebook.png`, `img/instagram.png`, `img/whatapp.png`, `img/linkedin.png`, `img/linktree.png`: iconos de redes.
+- `img/facebook.png`, `img/instagram.png`, `img/whatapp.png`, `img/linkedin.png`: iconos de redes.
 - `img/logo.jpeg`: versión anterior, sin uso.
 
 ## Identidad visual
