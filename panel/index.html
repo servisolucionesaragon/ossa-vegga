@@ -95,6 +95,7 @@
       #reporte { padding-bottom: 28mm !important; }
     }
     .rep-redes img { width: 13px; height: 13px; vertical-align: -2px; margin: 0 3px 0 0; }
+    tr.urgente td { color: var(--danger); font-weight: 600; }
   </style>
 </head>
 <body>
@@ -115,6 +116,22 @@
   <section class="card">
     <h2>Registros guardados <span class="msg" id="msg-registros"></span></h2>
     <div id="tabla-registros"></div>
+  </section>
+
+  <section class="card" id="bloque-recordatorios">
+    <div class="detalle-head">
+      <h2 style="margin:0;font-size:16px">Recordatorios de renovación</h2>
+      <label style="font-size:13px;color:var(--muted)">Pólizas que vencen en
+        <select id="dias-recordatorio" style="width:auto;margin-left:6px">
+          <option value="30">30 días</option>
+          <option value="60" selected>60 días</option>
+          <option value="90">90 días</option>
+          <option value="180">180 días</option>
+        </select>
+      </label>
+    </div>
+    <p class="peligro-txt" style="margin-top:8px">Contacte a estos clientes para recordarles la renovación. Se incluyen también las pólizas ya vencidas.</p>
+    <div id="tabla-recordatorios"></div>
   </section>
 
   <section class="card oculto" id="bloque-detalle">
@@ -232,6 +249,7 @@
     if (!r.ok) { mensaje('msg-registros', r.data.error || 'No se pudieron cargar los registros.'); return; }
     registros = r.data.registros;
     pintarRegistros();
+    pintarRecordatorios();
   }
 
   async function cargarUsuarios() {
@@ -329,6 +347,44 @@
     if (r.ok) { dlg.close(); mensaje('msg-registros', 'Contraseña cambiada.', true); }
     else { mensaje('msg-clave', r.data.error || 'No se pudo cambiar.'); }
   });
+
+  // ---------- Recordatorios de renovación ----------
+  function parseDMY(s) {
+    var m = String(s || '').match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    return m ? new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10)) : null;
+  }
+
+  function pintarRecordatorios() {
+    var dias = parseInt(document.getElementById('dias-recordatorio').value, 10);
+    var hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    var filas = [];
+    registros.forEach(function (r) {
+      (r.polizas || []).forEach(function (p) {
+        var fin = parseDMY(p.vigencia_fin);
+        if (!fin) return;
+        var faltan = Math.round((fin - hoy) / 86400000);
+        if (faltan <= dias) filas.push({ faltan: faltan, fin: p.vigencia_fin, empresa: r.empresa, asesor: r.asesor, p: p });
+      });
+    });
+    filas.sort(function (a, b) { return a.faltan - b.faltan; });
+    var cont = document.getElementById('tabla-recordatorios');
+    if (!filas.length) {
+      cont.innerHTML = '<p class="vacio">No hay pólizas que venzan en los próximos ' + dias + ' días.</p>';
+      return;
+    }
+    cont.innerHTML = '<div style="overflow-x:auto"><table><thead><tr><th>Vence</th><th>Estado</th><th>Empresa</th><th>Póliza</th>' +
+      '<th>Compañía</th><th>Ramo</th><th>Asesor</th><th>Prima</th></tr></thead><tbody>' +
+      filas.map(function (x) {
+        var estado = x.faltan < 0 ? 'Vencida hace ' + (-x.faltan) + ' días' : x.faltan + ' días';
+        var clase = x.faltan <= 30 ? ' class="urgente"' : '';
+        return '<tr' + clase + '><td>' + esc(x.fin) + '</td><td>' + esc(estado) + '</td><td>' + esc(x.empresa) +
+          '</td><td>' + esc(x.p.numero) + '</td><td>' + esc(x.p.compania) + '</td><td>' + esc(x.p.ramo) +
+          '</td><td>' + esc(x.asesor) + '</td><td class="num">' + cop(x.p.prima) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+
+  document.getElementById('dias-recordatorio').addEventListener('change', pintarRecordatorios);
 
   // ---------- Simulación y reporte de un registro ----------
   function fila(k, v, clase) {
