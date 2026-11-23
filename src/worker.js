@@ -213,6 +213,18 @@ async function api(request, env, url) {
   }
 
   const mUsuario = p.match(/^\/api\/usuarios\/(\d+)$/);
+  if (mUsuario && m === 'DELETE') {
+    if (u.rol !== 'admin') return json({ error: 'Solo el administrador puede gestionar usuarios.' }, 403);
+    const id = parseInt(mUsuario[1], 10);
+    if (id === u.id) return json({ error: 'No puede eliminar su propio usuario.' }, 400);
+    const cuenta = await env.DB.prepare('SELECT COUNT(*) AS n FROM registros WHERE usuario_id = ?').bind(id).first();
+    if (cuenta.n > 0) {
+      return json({ error: 'Este usuario tiene ' + cuenta.n + ' registro(s) guardados. Desactívelo en lugar de eliminarlo para conservar los registros.' }, 409);
+    }
+    await env.DB.prepare('DELETE FROM sesiones WHERE usuario_id = ?').bind(id).run();
+    await env.DB.prepare('DELETE FROM usuarios WHERE id = ?').bind(id).run();
+    return json({ ok: true });
+  }
   if (mUsuario && m === 'PATCH') {
     if (u.rol !== 'admin') return json({ error: 'Solo el administrador puede gestionar usuarios.' }, 403);
     const id = parseInt(mUsuario[1], 10);

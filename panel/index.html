@@ -287,7 +287,8 @@
         '<td><button class="btn" data-accion="activo" data-id="' + u.id + '" data-valor="' + (activo ? '0' : '1') + '">' +
         (activo ? 'Desactivar' : 'Activar') + '</button> <button class="btn" data-accion="clave" data-id="' + u.id + '">Nueva contraseña</button> ' +
         '<button class="btn" data-accion="rol" data-id="' + u.id + '" data-valor="' + (u.rol === 'admin' ? 'asesor' : 'admin') + '">' +
-        (u.rol === 'admin' ? 'Pasar a asesor' : 'Pasar a administrador') + '</button></td></tr>';
+        (u.rol === 'admin' ? 'Pasar a asesor' : 'Pasar a administrador') + '</button> ' +
+        '<button class="btn btn-borrar" data-accion="eliminar" data-id="' + u.id + '">Eliminar</button></td></tr>';
     }).join('');
     document.getElementById('tabla-usuarios').innerHTML =
       '<div style="overflow-x:auto"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>' + filas + '</tbody></table></div>';
@@ -347,7 +348,12 @@
     var b = e.target.closest('button[data-accion]');
     if (!b) return;
     var id = b.getAttribute('data-id');
-    if (b.getAttribute('data-accion') === 'rol') {
+    if (b.getAttribute('data-accion') === 'eliminar') {
+      if (!confirm('¿Eliminar este usuario? Esta acción no se puede deshacer.')) return;
+      var rd = await api('/api/usuarios/' + id, { method: 'DELETE' });
+      mensaje('msg-usuarios', rd.ok ? 'Usuario eliminado.' : (rd.data.error || 'No se pudo eliminar el usuario.'), rd.ok);
+      cargarUsuarios();
+    } else if (b.getAttribute('data-accion') === 'rol') {
       var nuevoRol = b.getAttribute('data-valor');
       if (!confirm('¿Cambiar el rol de este usuario a ' + (nuevoRol === 'admin' ? 'administrador' : 'asesor') + '?')) return;
       var rr = await api('/api/usuarios/' + id, { method: 'PATCH', body: JSON.stringify({ rol: nuevoRol }) });
