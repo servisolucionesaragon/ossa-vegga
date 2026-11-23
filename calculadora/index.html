@@ -460,7 +460,6 @@
         </div>
         <div class="amount" id="d-fondo">$ 0</div>
         <div class="desc">Monto disponible para financiar el Plan de Trabajo Anual de la empresa seleccionada.</div>
-        <div class="eq"><span>Equivalente sobre prima total:</span><b id="d-eq">0%</b></div>
       </div>
 
       <div class="por-poliza-titulo">Fondo por póliza</div>
@@ -837,7 +836,6 @@
     if (validas === 0) {
       ['d-prima', 'd-comision', 'd-neta', 'd-fondo'].forEach(function (id) { $(id).textContent = '$ 0'; });
       $('d-ret').textContent = '- $ 0';
-      $('d-eq').textContent = '0%';
       return;
     }
     $('d-prima').textContent = cop(t.prima);
@@ -845,7 +843,6 @@
     $('d-ret').textContent = copNeg(t.retenciones);
     $('d-neta').textContent = cop(t.comisionNeta);
     $('d-fondo').textContent = cop(t.fondoImpacto);
-    $('d-eq').textContent = (t.prima > 0 ? (t.fondoImpacto / t.prima * 100) : 0).toFixed(2) + '%';
   }
 
   // ---------- Eventos de las pólizas (delegación) ----------
