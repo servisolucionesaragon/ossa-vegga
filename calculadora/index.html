@@ -323,6 +323,12 @@
     #reporte { position: relative; isolation: isolate; overflow: hidden; }
     #reporte .marca-agua { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
       width: 72%; opacity: .3; z-index: -1; pointer-events: none; }
+    /* Pie de página del reporte con datos de contacto */
+    .rep-pie { margin-top: 18px; border-top: 1px solid #e3e8ee; padding-top: 8px; font-size: 11px; color: #4b5663; line-height: 1.5; }
+    @media print {
+      .rep-pie { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; margin: 0; }
+      #reporte { padding-bottom: 28mm !important; }
+    }
   </style>
 </head>
 <body>
@@ -994,7 +1000,8 @@
       '</table>' +
 
       '<p class="rep-note">Los valores de este reporte son una proyección con base en los aportes mensuales generados por ARL; corresponden a montos mensuales actuales.<br>' +
-      'Nota: OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta recibida por la agencia después de impuestos, no sobre el valor de la prima del seguro.</p>';
+      'Nota: OSSA &amp; VEGA: el fondo se calcula exclusivamente sobre la comisión neta recibida por la agencia después de impuestos, no sobre el valor de la prima del seguro.</p>' +
+      '<div class="rep-pie"><strong>OSSA &amp; VEGA SEGUROS</strong><br>Fundador: Mateo Ossa Vega · Tel. 310 548 6395 · mateo@ossavega.com<br>Cofundadora: Paula Andrea Arias · Tel. 301 685 6861 · paula@ossavega.com<br>Carrera 84F # 3C-40, Barrio Belén, Medellín, Antioquia · Lunes a jueves 9:00 a.m. – 5:00 p.m. · Viernes 9:00 a.m. – 2:00 p.m.</div>';
 
     $('reporte').innerHTML = html;
     $('rep-overlay').classList.add('open');
