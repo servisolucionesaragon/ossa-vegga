@@ -762,6 +762,19 @@
     return m ? m[3] + '-' + m[2] + '-' + m[1] : '';
   }
 
+  // Fecha fin por defecto: un año después de la fecha de inicio
+  function autoFin(item) {
+    var ini = item.querySelector('.f-vig-ini').value;
+    if (!fechaValida(ini)) return;
+    var m = ini.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    var dia = parseInt(m[1], 10), mes = parseInt(m[2], 10), anio = parseInt(m[3], 10) + 1;
+    var f = new Date(anio, mes - 1, dia);
+    if (f.getMonth() !== mes - 1) f = new Date(anio, mes, 0); // 29-feb pasa a 28-feb
+    var fin = ('0' + f.getDate()).slice(-2) + '-' + ('0' + (f.getMonth() + 1)).slice(-2) + '-' + f.getFullYear();
+    item.querySelector('.f-vig-fin').value = fin;
+    item.querySelector('.f-cal-fin').value = isoDeFecha(fin);
+  }
+
   // mostrar=true marca los campos con error (al generar el reporte)
   function validarPoliza(item, mostrar) {
     var d = leerPoliza(item);
@@ -840,6 +853,7 @@
       e.target.value = mascaraFecha(e.target.value);
       var cal = e.target.parentElement.querySelector('.f-cal');
       cal.value = isoDeFecha(e.target.value);
+      if (e.target.classList.contains('f-vig-ini')) autoFin(e.target.closest('.poliza-item'));
     }
     if (e.target.classList.contains('f-prima')) {
       e.target.value = formatPesos(parsePesos(e.target.value));
@@ -852,6 +866,7 @@
       var campo = e.target.parentElement.querySelector('.f-vig-' + (e.target.classList.contains('f-cal-ini') ? 'ini' : 'fin'));
       campo.value = fechaDeIso(e.target.value);
       campo.classList.remove('invalid');
+      if (e.target.classList.contains('f-cal-ini')) autoFin(e.target.closest('.poliza-item'));
       recalcular();
     }
   });
