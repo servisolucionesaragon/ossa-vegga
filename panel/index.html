@@ -109,6 +109,7 @@
   </a>
   <div class="acciones">
     <a class="btn" href="../calculadora/">Calculadora</a>
+    <button class="btn" id="btn-datos" type="button">Mis datos</button>
     <button class="btn" id="btn-clave" type="button">Cambiar contraseña</button>
     <button class="btn btn-primario" id="btn-csv" type="button">Exportar a Excel (CSV)</button>
     <button class="btn" id="btn-salir" type="button">Cerrar sesión</button>
@@ -190,6 +191,21 @@
     <div class="mdl-body"><div id="reporte"></div></div>
   </div>
 </div>
+
+<dialog id="dlg-datos" style="border:1px solid var(--borde);border-radius:14px;padding:20px;width:min(380px,92vw)">
+  <form id="form-datos" method="dialog">
+    <h2 style="font-size:16px;margin:0 0 12px">Mis datos</h2>
+    <div class="form-grid" style="grid-template-columns:1fr">
+      <div><label for="d-nombre">Nombre</label><input id="d-nombre" type="text" required></div>
+      <div><label for="d-correo">Correo</label><input id="d-correo" type="email" required></div>
+    </div>
+    <div class="msg" id="msg-datos"></div>
+    <div class="acciones" style="justify-content:flex-end;margin-top:12px">
+      <button class="btn" type="button" id="d-cancelar">Cancelar</button>
+      <button class="btn btn-primario" type="submit">Guardar</button>
+    </div>
+  </form>
+</dialog>
 
 <dialog id="dlg-clave" style="border:1px solid var(--borde);border-radius:14px;padding:20px;width:min(380px,92vw)">
   <form id="form-clave" method="dialog">
@@ -332,6 +348,31 @@
       if (!nueva) return;
       var r2 = await api('/api/usuarios/' + id, { method: 'PATCH', body: JSON.stringify({ password: nueva }) });
       mensaje('msg-usuarios', r2.ok ? 'Contraseña actualizada.' : (r2.data.error || 'No se pudo actualizar.'), r2.ok);
+    }
+  });
+
+  // Mis datos (nombre y correo del propio usuario)
+  var dlgDatos = document.getElementById('dlg-datos');
+  document.getElementById('btn-datos').addEventListener('click', function () {
+    mensaje('msg-datos', '');
+    document.getElementById('d-nombre').value = yo.nombre;
+    document.getElementById('d-correo').value = yo.email;
+    dlgDatos.showModal();
+  });
+  document.getElementById('d-cancelar').addEventListener('click', function () { dlgDatos.close(); });
+  document.getElementById('form-datos').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var r = await api('/api/perfil', { method: 'POST', body: JSON.stringify({
+      nombre: document.getElementById('d-nombre').value,
+      email: document.getElementById('d-correo').value
+    }) });
+    if (r.ok) {
+      yo = r.data.usuario;
+      document.getElementById('usuario-info').textContent = yo.nombre + ' · ' + (yo.rol === 'admin' ? 'Administrador' : 'Asesor');
+      dlgDatos.close();
+      mensaje('msg-registros', 'Datos actualizados.', true);
+    } else {
+      mensaje('msg-datos', r.data.error || 'No se pudieron guardar los datos.');
     }
   });
 

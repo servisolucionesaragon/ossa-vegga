@@ -175,6 +175,21 @@ async function api(request, env, url) {
     return json({ ok: true });
   }
 
+  if (p === '/api/perfil' && m === 'POST') {
+    const body = await leerJson(request);
+    if (!body) return json({ error: 'Solicitud no válida.' }, 400);
+    const nombre = String(body.nombre || '').trim();
+    const email = String(body.email || '').trim().toLowerCase();
+    if (!nombre) return json({ error: 'Escriba su nombre.' }, 400);
+    if (!EMAIL_RE.test(email)) return json({ error: 'Correo no válido.' }, 400);
+    try {
+      await env.DB.prepare('UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?').bind(nombre, email, u.id).run();
+    } catch {
+      return json({ error: 'Ya existe un usuario con ese correo.' }, 409);
+    }
+    return json({ ok: true, usuario: { id: u.id, email, nombre, rol: u.rol } });
+  }
+
   // ----- Administración de usuarios (solo admin) -----
   if (p === '/api/usuarios') {
     if (u.rol !== 'admin') return json({ error: 'Solo el administrador puede gestionar usuarios.' }, 403);
