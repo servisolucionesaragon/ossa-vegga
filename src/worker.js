@@ -309,6 +309,63 @@ async function api(request, env, url) {
     return json({ id: registroId }, 201);
   }
 
+  const mReg = p.match(/^\/api\/registros\/(\d+)$/);
+  if (mReg && m === 'GET') {
+    const id = parseInt(mReg[1], 10);
+    const reg = await env.DB.prepare(
+      'SELECT id, creado, empresa, eje, tema, actividad FROM registros WHERE id = ?'
+    ).bind(id).first();
+    if (!reg) return json({ error: 'Registro no encontrado.' }, 404);
+    const ps = await env.DB.prepare(
+      'SELECT numero, compania, ramo, vigencia_inicio, vigencia_fin, prima, comision_pct, retencion_pct FROM polizas WHERE registro_id = ? ORDER BY id'
+    ).bind(id).all();
+    return json({ registro: reg, polizas: ps.results });
+  }
+
+  if (mReg && m === 'PUT') {
+    const id = parseInt(mReg[1], 10);
+    const existe = await env.DB.prepare('SELECT id FROM registros WHERE id = ?').bind(id).first();
+    if (!existe) return json({ error: 'Registro no encontrado.' }, 404);
+    const body = await leerJson(request);
+    if (!body) return json({ error: 'Solicitud no válida.' }, 400);
+    const empresa = String(body.empresa || '').trim();
+    if (!empresa) return json({ error: 'Falta el nombre de la empresa.' }, 400);
+    if (!Array.isArray(body.polizas) || body.polizas.length === 0 || body.polizas.length > 50) {
+      return json({ error: 'Debe registrar entre 1 y 50 pólizas.' }, 400);
+    }
+    const filas = [];
+    let tPrima = 0, tNeta = 0, tFondo = 0;
+    for (const pol of body.polizas) {
+      const numero = String(pol.numero || '').trim();
+      const prima = Math.round(Number(pol.prima));
+      const c = Number(pol.comisionPct);
+      const r = Number(pol.retencionPct);
+      if (!numero) return json({ error: 'Cada póliza necesita número o cotización.' }, 400);
+      if (!/^\d{2}-\d{2}-\d{4}$/.test(String(pol.vigIni || '')) || !/^\d{2}-\d{2}-\d{4}$/.test(String(pol.vigFin || ''))) {
+        return json({ error: 'Las fechas de vigencia deben tener formato DD-MM-AAAA.' }, 400);
+      }
+      if (!Number.isFinite(prima) || prima <= 0) return json({ error: 'Cada póliza necesita una prima mayor a cero.' }, 400);
+      if (!Number.isFinite(c) || c < 0 || c > 100 || !Number.isFinite(r) || r < 0 || r > 100) {
+        return json({ error: 'Los porcentajes deben estar entre 0 y 100.' }, 400);
+      }
+      const x = calcular(prima, c, r);
+      tPrima += prima; tNeta += x.neta; tFondo += x.fondo;
+      filas.push({ numero, compania: String(pol.compania || ''), ramo: String(pol.ramo || ''),
+        vigIni: String(pol.vigIni || ''), vigFin: String(pol.vigFin || ''), prima, c, r, x });
+    }
+    await env.DB.batch([
+      env.DB.prepare(
+        'UPDATE registros SET empresa = ?, eje = ?, tema = ?, actividad = ?, prima_total = ?, comision_neta_total = ?, fondo_total = ? WHERE id = ?'
+      ).bind(empresa, String(body.eje || ''), String(body.tema || ''), String(body.actividad || ''), tPrima, tNeta, tFondo, id),
+      env.DB.prepare('DELETE FROM polizas WHERE registro_id = ?').bind(id),
+      ...filas.map((f) => env.DB.prepare(
+        `INSERT INTO polizas (registro_id, numero, compania, ramo, vigencia_inicio, vigencia_fin, prima, comision_pct, retencion_pct, comision_bruta, retenciones, comision_neta, fondo)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(id, f.numero, f.compania, f.ramo, f.vigIni, f.vigFin, f.prima, f.c, f.r, f.x.bruta, f.x.retenciones, f.x.neta, f.x.fondo)),
+    ]);
+    return json({ id });
+  }
+
   if (p === '/api/export.csv' && m === 'GET') {
     const rs = await env.DB.prepare(
       `SELECT r.id, r.creado, us.nombre AS asesor, r.empresa, r.eje, r.tema, r.actividad,

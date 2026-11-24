@@ -360,6 +360,7 @@
   </div>
 </header>
 
+<div id="aviso-edicion" style="display:none;background:#fff4e5;border-bottom:1px solid #f5c979;color:#7a4b00;padding:10px 24px;font-size:14px"></div>
 <main>
   <section>
     <div class="card">
@@ -906,7 +907,9 @@
     recalcular();
   });
 
-  // ---------- Guardar registro (requiere sesión) ----------
+  // ---------- Guardar registro (nuevo o actualización de uno existente) ----------
+  var registroEditando = null;
+
   $('btn-guardar').addEventListener('click', async function () {
     var btn = this;
     if (!validarTodo(true)) {
@@ -936,18 +939,58 @@
         location.href = '../acceso/';
         return;
       }
-      var r = await fetch('/api/registros', {
-        method: 'POST', credentials: 'same-origin',
+      var url = registroEditando ? '/api/registros/' + registroEditando : '/api/registros';
+      var r = await fetch(url, {
+        method: registroEditando ? 'PUT' : 'POST', credentials: 'same-origin',
         headers: { 'content-type': 'application/json' }, body: JSON.stringify(body)
       });
       var data = await r.json().catch(function () { return {}; });
-      alert(r.ok ? 'Registro guardado (N.º ' + data.id + ').' : (data.error || 'No se pudo guardar el registro.'));
+      if (r.ok) {
+        alert(registroEditando ? 'Registro N.º ' + registroEditando + ' actualizado.' : 'Registro guardado (N.º ' + data.id + ').');
+      } else {
+        alert(data.error || 'No se pudo guardar el registro.');
+      }
     } catch (err) {
       alert('No hay conexión con el servidor. Intente de nuevo.');
     } finally {
       btn.disabled = false;
     }
   });
+
+  // ---------- Cargar un registro guardado para modificarlo ----------
+  (async function cargarRegistroEditar() {
+    var id = new URLSearchParams(location.search).get('registro');
+    if (!id) return;
+    var r = await fetch('/api/registros/' + encodeURIComponent(id), { credentials: 'same-origin' });
+    if (!r.ok) {
+      alert(r.status === 401 ? 'Inicie sesión para editar el registro.' : 'No se encontró el registro.');
+      if (r.status === 401) location.href = '../acceso/';
+      return;
+    }
+    var data = await r.json();
+    registroEditando = data.registro.id;
+    $('empresa').value = data.registro.empresa;
+    $('eje').value = data.registro.eje || 'Bienestar';
+    $('tema').value = data.registro.tema || '';
+    $('actividad').value = data.registro.actividad || '';
+    actualizarHint();
+    polizasEl.innerHTML = '';
+    data.polizas.forEach(function (pol) {
+      var item = agregarPoliza({ prima: pol.prima, comisionPct: pol.comision_pct, retencionPct: pol.retencion_pct });
+      item.querySelector('.f-poliza').value = pol.numero;
+      item.querySelector('.f-compania').value = pol.compania;
+      item.querySelector('.f-ramo').value = pol.ramo;
+      item.querySelector('.f-vig-ini').value = pol.vigencia_inicio;
+      item.querySelector('.f-vig-fin').value = pol.vigencia_fin;
+      item.querySelector('.f-cal-ini').value = isoDeFecha(pol.vigencia_inicio);
+      item.querySelector('.f-cal-fin').value = isoDeFecha(pol.vigencia_fin);
+    });
+    recalcular();
+    $('btn-guardar').textContent = 'Actualizar registro';
+    var aviso = $('aviso-edicion');
+    aviso.textContent = 'Modificando el registro N.º ' + registroEditando + '. Al guardar se actualizará el registro existente.';
+    aviso.style.display = 'block';
+  })();
 
   // ---------- Tema ----------
   $('btn-theme').addEventListener('click', function () {

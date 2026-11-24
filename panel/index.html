@@ -142,6 +142,7 @@
     <div class="detalle-head">
       <h2 style="margin:0;font-size:16px" id="det-titulo">Simulación</h2>
       <div class="acciones">
+        <button class="btn" id="btn-editar-reg" type="button">Editar en calculadora</button>
         <button class="btn btn-primario" id="btn-reporte-reg" type="button">Generar reporte</button>
         <button class="btn" id="btn-cerrar-det" type="button">Cerrar</button>
       </div>
@@ -548,6 +549,10 @@
     document.querySelectorAll('tr.sel').forEach(function (e) { e.classList.remove('sel'); });
   });
   document.getElementById('btn-reporte-reg').addEventListener('click', generarReporteRegistro);
+  document.getElementById('btn-editar-reg').addEventListener('click', function () {
+    var id = document.getElementById('bloque-detalle').dataset.id;
+    location.href = '../calculadora/?registro=' + encodeURIComponent(id);
+  });
   document.getElementById('btn-cerrar-rep').addEventListener('click', function () { document.getElementById('ovl-rep').classList.remove('open'); });
   document.getElementById('btn-imprimir').addEventListener('click', function () { window.print(); });
   document.getElementById('ovl-rep').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
